@@ -20,10 +20,10 @@
 
 | Label | Definition | Verification Condition |
 | :--- | :--- | :--- |
-| `SUPPORTED_CURRENT` | Claim is entailed by retrieved evidence that is **currently active** at reference time $t_{\text{ref}}$. | $\text{Entails}(E, C) \land (\text{valid\_to} > t_{\text{ref}} \lor \text{present})$ |
-| `OUTDATED` | Claim is entailed by retrieved evidence, but that evidence was **superseded or expired** prior to $t_{\text{ref}}$. | $\text{Entails}(E, C) \land (\text{valid\_to} \le t_{\text{ref}} \lor \text{superseded\_by} \le t_{\text{ref}})$ |
-| `CONTRADICTED` | Claim directly conflicts with or is refuted by retrieved evidence. | $\text{Refutes}(E, C)$ |
-| `UNSUPPORTED` | Retrieved passages contain insufficient facts to substantiate the claim. | $\text{Neutral}(E, C)$ |
+| `SUPPORTED_CURRENT` | Claim is entailed by retrieved evidence that is **currently active** at reference time $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` > $t_{\text{ref}}$ or `present`) |
+| `OUTDATED` | Claim is entailed by retrieved evidence, but that evidence was **superseded or expired** prior to $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` ≤ $t_{\text{ref}}$ or `superseded_by` ≤ $t_{\text{ref}}$) |
+| `CONTRADICTED` | Claim directly conflicts with or is refuted by retrieved evidence. | `Refutes(E, C)` |
+| `UNSUPPORTED` | Retrieved passages contain insufficient facts to substantiate the claim. | `Neutral(E, C)` |
 
 ---
 
@@ -98,7 +98,7 @@ python experiments/evaluate_full_benchmark.py --batch_size 32
 *Outputs comparative metrics and exports publication-ready LaTeX table to `experiments/table_test_results.tex`.*
 
 ### 2. Temporal Sensitivity & Domain Breakdown (Phase B)
-Analyzes how False-Support Rate scales across staleness duration ($0\text{--}30\text{d}$ to $120\text{--}153\text{d}$) and 6 knowledge domains:
+Analyzes how False-Support Rate scales across staleness duration (0–30 days up to 120–153 days) and 6 knowledge domains:
 ```bash
 python experiments/analyze_temporal_sensitivity.py
 ```
