@@ -1,0 +1,96 @@
+[
+  {
+    "model_name": "Heuristic NLI Baseline (Lexical)",
+    "total_samples": 1996,
+    "instance_accuracy": 0.3938,
+    "macro_f1": 0.3082,
+    "per_class": {
+      "SUPPORTS": {
+        "precision": 0.6518,
+        "recall": 0.3525,
+        "f1": 0.4575,
+        "support": 993
+      },
+      "REFUTES": {
+        "precision": 0.4983,
+        "recall": 0.4395,
+        "f1": 0.4671,
+        "support": 992
+      },
+      "NOT ENOUGH INFO": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      }
+    },
+    "total_contrastive_cases": 500,
+    "all_instances_case_accuracy": 0.052,
+    "total_contrastive_pairs": 1976,
+    "contrastive_pair_accuracy": 0.0633,
+    "confusion_matrix": {
+      "SUPPORTS": {
+        "SUPPORTS": 350,
+        "REFUTES": 430,
+        "NOT ENOUGH INFO": 213
+      },
+      "REFUTES": {
+        "SUPPORTS": 185,
+        "REFUTES": 436,
+        "NOT ENOUGH INFO": 371
+      },
+      "NOT ENOUGH INFO": {
+        "SUPPORTS": 2,
+        "REFUTES": 9,
+        "NOT ENOUGH INFO": 0
+      }
+    }
+  },
+  {
+    "model_name": "Neural Cross-Encoder (distilroberta)",
+    "total_samples": 1996,
+    "instance_accuracy": 0.4845,
+    "macro_f1": 0.3874,
+    "per_class": {
+      "SUPPORTS": {
+        "precision": 0.7076,
+        "recall": 0.4703,
+        "f1": 0.565,
+        "support": 993
+      },
+      "REFUTES": {
+        "precision": 0.7035,
+        "recall": 0.5,
+        "f1": 0.5846,
+        "support": 992
+      },
+      "NOT ENOUGH INFO": {
+        "precision": 0.0063,
+        "recall": 0.3636,
+        "f1": 0.0125,
+        "support": 11
+      }
+    },
+    "total_contrastive_cases": 500,
+    "all_instances_case_accuracy": 0.176,
+    "total_contrastive_pairs": 1976,
+    "contrastive_pair_accuracy": 0.2632,
+    "confusion_matrix": {
+      "SUPPORTS": {
+        "SUPPORTS": 467,
+        "REFUTES": 205,
+        "NOT ENOUGH INFO": 321
+      },
+      "REFUTES": {
+        "SUPPORTS": 190,
+        "REFUTES": 496,
+        "NOT ENOUGH INFO": 306
+      },
+      "NOT ENOUGH INFO": {
+        "SUPPORTS": 3,
+        "REFUTES": 4,
+        "NOT ENOUGH INFO": 4
+      }
+    }
+  }
+]

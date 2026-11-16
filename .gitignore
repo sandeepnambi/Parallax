@@ -1,0 +1,70 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and tooling
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+.env.*
+*.local
+*.secret
+*.pem
+*.key
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Raw External Datasets & Large Archives (>25MB files)
+# Keep directory structure via .gitkeep
+Datasets/D1-HoH/*
+!Datasets/D1-HoH/.gitkeep
+Datasets/D2-VitaminC/*
+!Datasets/D2-VitaminC/.gitkeep
+Datasets/D3-RAGTruth/*
+!Datasets/D3-RAGTruth/.gitkeep
+*.zip
+*.tar.gz
+
+# Literature Survey Reference PDFs (external copyrighted papers)
+# Uncomment the line below if you want to keep reference PDFs out of git history:
+Papers/**/*.pdf
+
+# Temporary and local logs
+*.log
+scratch/

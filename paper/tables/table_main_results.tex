@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{l|c|cccc|c}
+\toprule
+\textbf{System} & \textbf{Macro-F1} & \textbf{Supp-Curr F1} & \textbf{Outdated F1} & \textbf{Contra F1} & \textbf{Unsupp F1} & $\mathbf{FSR}_{\text{OUTD}} \downarrow$ \\
+\midrule
+Static NLI Baseline & 0.565 & 0.643 & 0.000 & 0.769 & 0.847 & 92.5\% \\
+Parallax Verifier (Ours) & 0.883 & 0.956 & 0.959 & 0.769 & 0.847 & 0.0\% \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation on Parallax Pilot Benchmark (600 examples). $\text{FSR}_{\text{OUTD}}$ measures the percentage of superseded claims falsely certified as supported.}
+\label{tab:main_results}
+\end{table*}

@@ -1,0 +1,35 @@
+\begin{table}[h]
+\centering
+\small
+\begin{subtable}[t]{0.48\textwidth}
+\centering
+\begin{tabular}{l|cccc}
+\toprule
+\textbf{True \textbackslash{} Pred} & \textbf{Supp-C} & \textbf{Outd} & \textbf{Contra} & \textbf{Unsupp} \\
+\midrule
+\textbf{Supp-Curr} & 183 & 0 & 10 & 7 \\
+\textbf{Outdated}  & \textbf{185} & 0 & 10 & 5 \\
+\textbf{Contra}    & 1 & 0 & 75 & 24 \\
+\textbf{Unsupp}    & 0 & 0 & 0 & 100 \\
+\bottomrule
+\end{tabular}
+\caption{Static NLI Baseline ($\text{FSR}_{\text{OUTD}} = 92.5\%$)}
+\end{subtable}
+\hfill
+\begin{subtable}[t]{0.48\textwidth}
+\centering
+\begin{tabular}{l|cccc}
+\toprule
+\textbf{True \textbackslash{} Pred} & \textbf{Supp-C} & \textbf{Outd} & \textbf{Contra} & \textbf{Unsupp} \\
+\midrule
+\textbf{Supp-Curr} & 183 & 0 & 10 & 7 \\
+\textbf{Outdated}  & 0 & \textbf{185} & 10 & 5 \\
+\textbf{Contra}    & 0 & 1 & 75 & 24 \\
+\textbf{Unsupp}    & 0 & 0 & 0 & 100 \\
+\bottomrule
+\end{tabular}
+\caption{Parallax Two-Stage Verifier ($\text{FSR}_{\text{OUTD}} = 0.0\%$)}
+\end{subtable}
+\caption{Confusion matrices on the 600-example Parallax Pilot Benchmark. The static baseline exhibits severe leakage from \texttt{OUTDATED} to \texttt{SUPPORTED\_CURRENT} due to temporal ignorance, which Parallax completely resolves.}
+\label{tab:confusion_matrices}
+\end{table}

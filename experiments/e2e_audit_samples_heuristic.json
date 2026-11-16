@@ -1,0 +1,146 @@
+{
+  "Case 1 (Silent Stale Evidence)": {
+    "query": "Who is the current Master of the Horse and which team does \u00c0lex Carbonell play for?",
+    "answer_text": "Based on the retrieved context, the current Master of the Horse is Lord de Mauley. Furthermore, \u00c0lex Carbonell Vall\u00e9s plays for Almere City.",
+    "reference_time": "2024-12-01",
+    "total_claims": 2,
+    "overall_status": "DEGRADED_BY_STALE_EVIDENCE",
+    "truthfulness_score": 0.5,
+    "claim_breakdown": {
+      "SUPPORTED_CURRENT": 1,
+      "OUTDATED": 1,
+      "CONTRADICTED": 0,
+      "UNSUPPORTED": 0
+    },
+    "claim_audits": [
+      {
+        "claim_index": 1,
+        "claim_text": "The current Master of the Horse is Lord de Mauley.",
+        "verdict": "OUTDATED",
+        "evidence_matched": "The current Master of the Horse is Lord de Mauley.",
+        "evidence_source": "Master of the Horse (id: 100025)",
+        "match_score": 1.0,
+        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01)",
+        "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
+      },
+      {
+        "claim_index": 2,
+        "claim_text": "\u00c0lex Carbonell Vall\u00e9s plays for Almere City.",
+        "verdict": "SUPPORTED_CURRENT",
+        "evidence_matched": "\u00c0lex Carbonell Vall\u00e9s (born 15 September 1997) is a Spanish footballer who plays as a central midfielder for Dutch club Almere City.",
+        "evidence_source": "\u00c1lex Carbonell (id: 52437830)",
+        "match_score": 0.8533,
+        "temporal_status": "ACTIVE / VALID",
+        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+      }
+    ]
+  },
+  "Case 2 (Mixed Claims: Current + Outdated + Conflict)": {
+    "query": "What is the status of Jerrick Harding and the Astro Boy manga?",
+    "answer_text": "According to the documentation, Jerrick Harding plays for MoraBanc Andorra. The total number of chapters in the series is 112. Additionally, Jerrick Harding was selected as the European MVP in 2023.",
+    "reference_time": "2024-12-01",
+    "total_claims": 3,
+    "overall_status": "MIXED_STALE_AND_HALLUCINATED",
+    "truthfulness_score": 0.333,
+    "claim_breakdown": {
+      "SUPPORTED_CURRENT": 1,
+      "OUTDATED": 1,
+      "CONTRADICTED": 1,
+      "UNSUPPORTED": 0
+    },
+    "claim_audits": [
+      {
+        "claim_index": 1,
+        "claim_text": "Jerrick Harding plays for MoraBanc Andorra.",
+        "verdict": "SUPPORTED_CURRENT",
+        "evidence_matched": "Jerrick Harding (born April 13, 1998) is an American professional basketball player for MoraBanc Andorra of the Liga ACB.",
+        "evidence_source": "Jerrick Harding (id: 581293)",
+        "match_score": 0.7533,
+        "temporal_status": "ACTIVE / VALID",
+        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+      },
+      {
+        "claim_index": 2,
+        "claim_text": "The total number of chapters in the series is 112.",
+        "verdict": "OUTDATED",
+        "evidence_matched": "The total number of chapters is 112.",
+        "evidence_source": "List of Astro Boy chapters (id: 89211)",
+        "match_score": 0.86,
+        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01)",
+        "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
+      },
+      {
+        "claim_index": 3,
+        "claim_text": "Jerrick Harding was selected as the European MVP in 2023.",
+        "verdict": "CONTRADICTED",
+        "evidence_matched": "Jerrick Harding (born April 13, 1998) is an American professional basketball player for MoraBanc Andorra of the Liga ACB.",
+        "evidence_source": "Jerrick Harding (id: 581293)",
+        "match_score": 0.2889,
+        "temporal_status": "CONFLICTING (evidence valid 2024-07-01 to present)",
+        "explanation": "Evidence directly refutes or contradicts the claim."
+      }
+    ]
+  },
+  "Case 3 (Direct Contradiction)": {
+    "query": "Who is the chief of the Fullerton Police Department?",
+    "answer_text": "The current chief of the Fullerton Police Department is David Hendricks.",
+    "reference_time": "2024-12-01",
+    "total_claims": 1,
+    "overall_status": "TRUSTWORTHY_CURRENT",
+    "truthfulness_score": 1.0,
+    "claim_breakdown": {
+      "SUPPORTED_CURRENT": 1,
+      "OUTDATED": 0,
+      "CONTRADICTED": 0,
+      "UNSUPPORTED": 0
+    },
+    "claim_audits": [
+      {
+        "claim_index": 1,
+        "claim_text": "The current chief of the Fullerton Police Department is David Hendricks.",
+        "verdict": "SUPPORTED_CURRENT",
+        "evidence_matched": "The current chief is Jon Radus.",
+        "evidence_source": "Fullerton Police Department (id: 9921)",
+        "match_score": 0.2873,
+        "temporal_status": "ACTIVE / VALID",
+        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+      }
+    ]
+  },
+  "Case 4 (Pristine Current Response)": {
+    "query": "What is the status of Karunagappalli railway station and Warsaw, Illinois?",
+    "answer_text": "The category of the Karunagappalli railway station is NSG 4. Furthermore, the median age in Warsaw, Illinois is 45.4 years.",
+    "reference_time": "2024-12-01",
+    "total_claims": 2,
+    "overall_status": "TRUSTWORTHY_CURRENT",
+    "truthfulness_score": 1.0,
+    "claim_breakdown": {
+      "SUPPORTED_CURRENT": 2,
+      "OUTDATED": 0,
+      "CONTRADICTED": 0,
+      "UNSUPPORTED": 0
+    },
+    "claim_audits": [
+      {
+        "claim_index": 1,
+        "claim_text": "The category of the Karunagappalli railway station is NSG 4.",
+        "verdict": "SUPPORTED_CURRENT",
+        "evidence_matched": "The category of the Karunagappalli railway station is NSG 4.",
+        "evidence_source": "Karunagappalli railway station (id: 41120)",
+        "match_score": 1.0,
+        "temporal_status": "ACTIVE / VALID",
+        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+      },
+      {
+        "claim_index": 2,
+        "claim_text": "The median age in Warsaw, Illinois is 45.4 years.",
+        "verdict": "SUPPORTED_CURRENT",
+        "evidence_matched": "According to the recent demographic survey, the median age in Warsaw, Illinois is 45.4 years.",
+        "evidence_source": "Warsaw, Illinois (id: 18821)",
+        "match_score": 0.92,
+        "temporal_status": "ACTIVE / VALID",
+        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+      }
+    ]
+  }
+}
