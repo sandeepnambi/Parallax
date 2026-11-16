@@ -1,0 +1,340 @@
+{
+  "Static Baseline RAG Auditor": {
+    "paragraph_accuracy": 0.4,
+    "false_trust_rate": 0.1733,
+    "false_trust_count": 13,
+    "non_pristine_total": 75,
+    "avg_trust_score_by_archetype": {
+      "PRISTINE_CURRENT": 0.8,
+      "DEGRADED_STALE": 0.72,
+      "HALLUCINATED": 0.44,
+      "MIXED_STALE_HALLUCINATED": 0.493
+    }
+  },
+  "Parallax Heuristic Auditor": {
+    "paragraph_accuracy": 0.7,
+    "false_trust_rate": 0.0,
+    "false_trust_count": 0,
+    "non_pristine_total": 75,
+    "avg_trust_score_by_archetype": {
+      "PRISTINE_CURRENT": 0.8,
+      "DEGRADED_STALE": 0.36,
+      "HALLUCINATED": 0.38,
+      "MIXED_STALE_HALLUCINATED": 0.226
+    }
+  },
+  "Parallax Neural Auditor (Ours)": {
+    "paragraph_accuracy": 0.65,
+    "false_trust_rate": 0.0,
+    "false_trust_count": 0,
+    "non_pristine_total": 75,
+    "avg_trust_score_by_archetype": {
+      "PRISTINE_CURRENT": 0.8,
+      "DEGRADED_STALE": 0.38,
+      "HALLUCINATED": 0.5,
+      "MIXED_STALE_HALLUCINATED": 0.253
+    }
+  },
+  "sample_audit_traces": [
+    {
+      "scenario_id": "SCENARIO_PRISTINE_001",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "HALLUCINATED_RESPONSE",
+      "is_correct": false,
+      "trust_score": 0.5,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "There are Over 900,000 copies of the series in circulation.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: The series has over 900,000 copies in circulation.",
+          "evidence_source": "Class de 2-ban Me ni Kawaii Onna no Ko to Tomodachi ni Natta (id: 74897662) (id: doc_pristine_0_1)",
+          "match_score": 0.7486,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Ron Holland's average points per game in the 29 games played for the NBA G League Ignite were 18.5 points.",
+          "verdict": "UNSUPPORTED",
+          "evidence_matched": "Additional context: Holland averaged 18.5 points, 6.7 rebounds, 2.8 assists, and 2.1 steals per game in 29 games played.",
+          "evidence_source": "Ron Holland (basketball) (id: 73048713) (id: doc_pristine_0_2)",
+          "match_score": 0.4801,
+          "temporal_status": "INSUFFICIENT",
+          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_002",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "The percentage of people in South Hurstville spoke Mandarin at home is 16.9%.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: Other languages spoken at home included Mandarin (16.9%), Cantonese (13.9%), Arabic (6.0%), Greek (5.2%) and Macedonian (2.3%).",
+          "evidence_source": "South Hurstville (id: 2579786) (id: doc_pristine_1_1)",
+          "match_score": 0.4386,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Cuba next compete in the Summer Olympics after a period of absence? in 1935.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: Cuba didn't compete in the Summer Olympics again until 1935, which was again held in Paris, France.",
+          "evidence_source": "Ram\u00f3n Fonst (id: 7133469) (id: doc_pristine_1_2)",
+          "match_score": 0.6333,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_003",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "The estimated population of Dharmasraya Regency is 239,918.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: It covers an area of 2,961.13 km2 and had a population of 191,422 at the 2010 Census and 228,591 at the 2020 Census; the official estimate as at mid 2023 was 239,918 - comprising 121,700 males and 118,220 females.",
+          "evidence_source": "Dharmasraya Regency (id: 6575754) (id: doc_pristine_2_1)",
+          "match_score": 0.4694,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Moreover, The percentage of people in North Narrabeen reported having No Religion is 45.8%.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: The most common responses for religion in North Narrabeen were No Religion 45.8%, Catholic 21.4% and Anglican 15.1%.",
+          "evidence_source": "North Narrabeen, New South Wales (id: 2581172) (id: doc_pristine_2_2)",
+          "match_score": 0.5426,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_004",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "HALLUCINATED_RESPONSE",
+      "is_correct": false,
+      "trust_score": 0.5,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "The MP elected for the Araria Lok Sabha constituency is Shri Shahnawaz Alam, RJD.",
+          "verdict": "UNSUPPORTED",
+          "evidence_matched": "Context regarding query: Shri shahnawaz alam, Rjd is the MP elected in the 2024 Indian general election.",
+          "evidence_source": "Araria (id: 1702687) (id: doc_pristine_3_1)",
+          "match_score": 0.5706,
+          "temporal_status": "INSUFFICIENT",
+          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Also, The average household and family sizes in Donovan, Illinois were 3.31 and 2.75.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: The average household size was 3.31 and the average family size was 2.75.",
+          "evidence_source": "Donovan, Illinois (id: 111302) (id: doc_pristine_3_2)",
+          "match_score": 0.5111,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_005",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "HALLUCINATED_RESPONSE",
+      "is_correct": false,
+      "trust_score": 0.5,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "Based on the provided records, The director of communications to the prime minister of the United Kingdom is Matthew Doyle.",
+          "verdict": "UNSUPPORTED",
+          "evidence_matched": "Context regarding query: The director of communications to the prime minister of the United Kingdom is Matthew Doyle.",
+          "evidence_source": "Director of communications (id: 2469264) (id: doc_pristine_4_1)",
+          "match_score": 0.7029,
+          "temporal_status": "INSUFFICIENT",
+          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "In addition, The cost of boarding the rapid transit system or a train is R$ 5.00.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: Boarding the rapid transit system or a train costs R$ 5.00.",
+          "evidence_source": "Bilhete \u00danico (id: 9558964) (id: doc_pristine_4_2)",
+          "match_score": 0.7841,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_006",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "Muhammad-Ali Abdur-Rahkman plays for Bilbao.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: Muhammad-Ali Abdur-Rahkman (born September 1, 1994) is an American professional basketball player for Bilbao of the Spanish Liga ACB.",
+          "evidence_source": "Muhammad-Ali Abdur-Rahkman (id: 45489848) (id: doc_pristine_5_1)",
+          "match_score": 0.7103,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "The percentage of people at least 15 years old in Opononi that were employed full-time? were 29.6%.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: The employment status of those at least 15 was that 63 (29.6%) people were employed full-time, 36 (16.9%) were part-time, and 6 (2.8%) were unemployed.",
+          "evidence_source": "Opononi (id: 6677624) (id: doc_pristine_5_2)",
+          "match_score": 0.5821,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_007",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "Aleksandar Dimitri\u0107 plays for Hajduk 1912.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: Aleksandar Dimitri\u0107 (; born 29 February 1996) is a Serbian football forward who plays for Hajduk 1912.",
+          "evidence_source": "Aleksandar Dimitri\u0107 (id: 49762893) (id: doc_pristine_6_1)",
+          "match_score": 0.8533,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Salem Al-Najdi currently plays for Al-Nassr.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: Salem Al-Najdi (; born 27 January 2003) is a Saudi professional footballer who currently plays as a left-back or a left winger for Al-Nassr.",
+          "evidence_source": "Salem Al-Najdi (id: 72535764) (id: doc_pristine_6_2)",
+          "match_score": 0.8556,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_008",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "HALLUCINATED_RESPONSE",
+      "is_correct": false,
+      "trust_score": 0.5,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "The population of Mazomanie is 1,768.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: The population was 1,768 at the 2020 census.",
+          "evidence_source": "Mazomanie, Wisconsin (id: 260374) (id: doc_pristine_7_1)",
+          "match_score": 0.5833,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Moreover, There were 200 men in each of the five \"centuriae\" of the first cohort.",
+          "verdict": "UNSUPPORTED",
+          "evidence_matched": "Additional context: Each of its five \"centuriae\" was a double centuria of 200 men (rather than 100).",
+          "evidence_source": "Centuria (id: 1880720) (id: doc_pristine_7_2)",
+          "match_score": 0.4403,
+          "temporal_status": "INSUFFICIENT",
+          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_009",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "The most recent champions of the Dominico Cup Final are The Barrie Baycats.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: The most recent champions are the Barrie Baycats who defeated the Guelph Royals 4-0 in the 2024 Dominico Cup Final.",
+          "evidence_source": "Intercounty Baseball League (id: 1725632) (id: doc_pristine_8_1)",
+          "match_score": 0.8941,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "Also, There are 55 parks, miniparks, playfields, skateparks, greenbelts, and other related facilities in Kent's park system.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: Kent's park system includes 55 parks, miniparks, playfields, skateparks, greenbelts, and other related facilities.",
+          "evidence_source": "Kent, Washington (id: 138005) (id: doc_pristine_8_2)",
+          "match_score": 0.7197,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    },
+    {
+      "scenario_id": "SCENARIO_PRISTINE_010",
+      "archetype": "PRISTINE_CURRENT",
+      "gold_status": "TRUSTWORTHY_CURRENT",
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
+      "claim_audits": [
+        {
+          "claim_index": 1,
+          "claim_text": "Based on the provided records, dance act Signature use \"Nachna Onda Nei\" on \"Britain's Got Talent\" in their audition and again in their final performance? in 2008.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Context regarding query: In April 2008, dance act Signature used \"Nachna Onda Nei\" on \"Britain's Got Talent\" in their audition and again in their final performance.",
+          "evidence_source": "Billie Jean (id: 298538) (id: doc_pristine_9_1)",
+          "match_score": 0.7606,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        },
+        {
+          "claim_index": 2,
+          "claim_text": "In addition, The population of the village of Bj\u00f8rnevatn is 2,536.",
+          "verdict": "SUPPORTED_CURRENT",
+          "evidence_matched": "Additional context: The village has a population (2023) of 2,536 and a population density of .",
+          "evidence_source": "Bj\u00f8rnevatn (id: 4204049) (id: doc_pristine_9_2)",
+          "match_score": 0.65,
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        }
+      ]
+    }
+  ]
+}

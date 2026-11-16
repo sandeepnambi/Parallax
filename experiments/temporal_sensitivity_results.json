@@ -1,0 +1,1608 @@
+{
+  "staleness_sensitivity": {
+    "0\u201330 days (~1 mo)": {
+      "count": 62,
+      "fsr_static_heuristic": 0.871,
+      "fsr_static_neural": 0.4839,
+      "fsr_parallax_neural": 0.0
+    },
+    "61\u201390 days (~3 mos)": {
+      "count": 32,
+      "fsr_static_heuristic": 0.875,
+      "fsr_static_neural": 0.6562,
+      "fsr_parallax_neural": 0.0
+    },
+    "91\u2013120 days (~4 mos)": {
+      "count": 45,
+      "fsr_static_heuristic": 0.9556,
+      "fsr_static_neural": 0.4444,
+      "fsr_parallax_neural": 0.0
+    },
+    "121\u2013153 days (5+ mos)": {
+      "count": 61,
+      "fsr_static_heuristic": 0.9836,
+      "fsr_static_neural": 0.5246,
+      "fsr_parallax_neural": 0.0
+    }
+  },
+  "domain_breakdown": {
+    "General Knowledge": {
+      "count": 428,
+      "static_heuristic": {
+        "accuracy": 0.6915887850467289,
+        "macro_f1": 0.6056227259045596,
+        "fsr_outdated": 0.9252336448598131,
+        "false_supported_outdated_count": 99,
+        "total_outdated_count": 107,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.49489795918367346,
+            "recall": 0.9065420560747663,
+            "f1": 0.6402640264026402,
+            "support": 107
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 107
+          },
+          "CONTRADICTED": {
+            "precision": 0.8598130841121495,
+            "recall": 0.8598130841121495,
+            "f1": 0.8598130841121495,
+            "support": 107
+          },
+          "UNSUPPORTED": {
+            "precision": 0.856,
+            "recall": 1.0,
+            "f1": 0.9224137931034483,
+            "support": 107
+          }
+        },
+        "confusion_matrix": [
+          [
+            97,
+            0,
+            8,
+            2
+          ],
+          [
+            99,
+            0,
+            7,
+            1
+          ],
+          [
+            0,
+            0,
+            92,
+            15
+          ],
+          [
+            0,
+            0,
+            0,
+            107
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.9228971962616822,
+        "macro_f1": 0.9235930794790375,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 107,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.9065420560747663,
+            "f1": 0.9509803921568627,
+            "support": 107
+          },
+          "OUTDATED": {
+            "precision": 1.0,
+            "recall": 0.9252336448598131,
+            "f1": 0.9611650485436893,
+            "support": 107
+          },
+          "CONTRADICTED": {
+            "precision": 0.8598130841121495,
+            "recall": 0.8598130841121495,
+            "f1": 0.8598130841121495,
+            "support": 107
+          },
+          "UNSUPPORTED": {
+            "precision": 0.856,
+            "recall": 1.0,
+            "f1": 0.9224137931034483,
+            "support": 107
+          }
+        },
+        "confusion_matrix": [
+          [
+            97,
+            0,
+            8,
+            2
+          ],
+          [
+            0,
+            99,
+            7,
+            1
+          ],
+          [
+            0,
+            0,
+            92,
+            15
+          ],
+          [
+            0,
+            0,
+            0,
+            107
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.40420560747663553,
+        "macro_f1": 0.35360918560972776,
+        "fsr_outdated": 0.48598130841121495,
+        "false_supported_outdated_count": 52,
+        "total_outdated_count": 107,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.4727272727272727,
+            "recall": 0.48598130841121495,
+            "f1": 0.4792626728110599,
+            "support": 107
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 107
+          },
+          "CONTRADICTED": {
+            "precision": 0.5343511450381679,
+            "recall": 0.6542056074766355,
+            "f1": 0.5882352941176471,
+            "support": 107
+          },
+          "UNSUPPORTED": {
+            "precision": 0.2727272727272727,
+            "recall": 0.4766355140186916,
+            "f1": 0.3469387755102041,
+            "support": 107
+          }
+        },
+        "confusion_matrix": [
+          [
+            52,
+            0,
+            2,
+            53
+          ],
+          [
+            52,
+            0,
+            3,
+            52
+          ],
+          [
+            6,
+            0,
+            70,
+            31
+          ],
+          [
+            0,
+            0,
+            56,
+            51
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.5257009345794392,
+        "macro_f1": 0.5548912875613368,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 107,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.48598130841121495,
+            "f1": 0.6540880503144654,
+            "support": 107
+          },
+          "OUTDATED": {
+            "precision": 0.896551724137931,
+            "recall": 0.48598130841121495,
+            "f1": 0.6303030303030303,
+            "support": 107
+          },
+          "CONTRADICTED": {
+            "precision": 0.5343511450381679,
+            "recall": 0.6542056074766355,
+            "f1": 0.5882352941176471,
+            "support": 107
+          },
+          "UNSUPPORTED": {
+            "precision": 0.2727272727272727,
+            "recall": 0.4766355140186916,
+            "f1": 0.3469387755102041,
+            "support": 107
+          }
+        },
+        "confusion_matrix": [
+          [
+            52,
+            0,
+            2,
+            53
+          ],
+          [
+            0,
+            52,
+            3,
+            52
+          ],
+          [
+            0,
+            6,
+            70,
+            31
+          ],
+          [
+            0,
+            0,
+            56,
+            51
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "Geography & Demographics": {
+      "count": 108,
+      "static_heuristic": {
+        "accuracy": 0.6574074074074074,
+        "macro_f1": 0.5730015082956259,
+        "fsr_outdated": 0.9629629629629629,
+        "false_supported_outdated_count": 26,
+        "total_outdated_count": 27,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.49019607843137253,
+            "recall": 0.9259259259259259,
+            "f1": 0.6410256410256411,
+            "support": 27
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 27
+          },
+          "CONTRADICTED": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7407407407407407,
+            "f1": 0.7843137254901961,
+            "support": 27
+          },
+          "UNSUPPORTED": {
+            "precision": 0.7878787878787878,
+            "recall": 0.9629629629629629,
+            "f1": 0.8666666666666667,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            25,
+            0,
+            2,
+            0
+          ],
+          [
+            26,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            20,
+            7
+          ],
+          [
+            0,
+            0,
+            1,
+            26
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.8981481481481481,
+        "macro_f1": 0.8984127322917556,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 27,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.9259259259259259,
+            "f1": 0.9615384615384616,
+            "support": 27
+          },
+          "OUTDATED": {
+            "precision": 1.0,
+            "recall": 0.9629629629629629,
+            "f1": 0.9811320754716981,
+            "support": 27
+          },
+          "CONTRADICTED": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7407407407407407,
+            "f1": 0.7843137254901961,
+            "support": 27
+          },
+          "UNSUPPORTED": {
+            "precision": 0.7878787878787878,
+            "recall": 0.9629629629629629,
+            "f1": 0.8666666666666667,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            25,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            26,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            20,
+            7
+          ],
+          [
+            0,
+            0,
+            1,
+            26
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.39814814814814814,
+        "macro_f1": 0.34363038739465507,
+        "fsr_outdated": 0.4074074074074074,
+        "false_supported_outdated_count": 11,
+        "total_outdated_count": 27,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.45454545454545453,
+            "recall": 0.37037037037037035,
+            "f1": 0.40816326530612246,
+            "support": 27
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 27
+          },
+          "CONTRADICTED": {
+            "precision": 0.5161290322580645,
+            "recall": 0.5925925925925926,
+            "f1": 0.5517241379310345,
+            "support": 27
+          },
+          "UNSUPPORTED": {
+            "precision": 0.3090909090909091,
+            "recall": 0.6296296296296297,
+            "f1": 0.4146341463414634,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            10,
+            0,
+            3,
+            14
+          ],
+          [
+            11,
+            0,
+            2,
+            14
+          ],
+          [
+            1,
+            0,
+            16,
+            10
+          ],
+          [
+            0,
+            0,
+            10,
+            17
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.5,
+        "macro_f1": 0.5177503472289007,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 27,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.37037037037037035,
+            "f1": 0.5405405405405406,
+            "support": 27
+          },
+          "OUTDATED": {
+            "precision": 0.9166666666666666,
+            "recall": 0.4074074074074074,
+            "f1": 0.5641025641025641,
+            "support": 27
+          },
+          "CONTRADICTED": {
+            "precision": 0.5161290322580645,
+            "recall": 0.5925925925925926,
+            "f1": 0.5517241379310345,
+            "support": 27
+          },
+          "UNSUPPORTED": {
+            "precision": 0.3090909090909091,
+            "recall": 0.6296296296296297,
+            "f1": 0.4146341463414634,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            10,
+            0,
+            3,
+            14
+          ],
+          [
+            0,
+            11,
+            2,
+            14
+          ],
+          [
+            0,
+            1,
+            16,
+            10
+          ],
+          [
+            0,
+            0,
+            10,
+            17
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "Sports": {
+      "count": 104,
+      "static_heuristic": {
+        "accuracy": 0.6442307692307693,
+        "macro_f1": 0.5593912706325468,
+        "fsr_outdated": 0.8846153846153846,
+        "false_supported_outdated_count": 23,
+        "total_outdated_count": 26,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.4782608695652174,
+            "recall": 0.8461538461538461,
+            "f1": 0.6111111111111112,
+            "support": 26
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 26
+          },
+          "CONTRADICTED": {
+            "precision": 0.76,
+            "recall": 0.7307692307692307,
+            "f1": 0.7450980392156863,
+            "support": 26
+          },
+          "UNSUPPORTED": {
+            "precision": 0.7878787878787878,
+            "recall": 1.0,
+            "f1": 0.8813559322033898,
+            "support": 26
+          }
+        },
+        "confusion_matrix": [
+          [
+            22,
+            0,
+            4,
+            0
+          ],
+          [
+            23,
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            0,
+            19,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            26
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.8653846153846154,
+        "macro_f1": 0.8657801595214357,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 26,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.8461538461538461,
+            "f1": 0.9166666666666666,
+            "support": 26
+          },
+          "OUTDATED": {
+            "precision": 0.9583333333333334,
+            "recall": 0.8846153846153846,
+            "f1": 0.92,
+            "support": 26
+          },
+          "CONTRADICTED": {
+            "precision": 0.76,
+            "recall": 0.7307692307692307,
+            "f1": 0.7450980392156863,
+            "support": 26
+          },
+          "UNSUPPORTED": {
+            "precision": 0.7878787878787878,
+            "recall": 1.0,
+            "f1": 0.8813559322033898,
+            "support": 26
+          }
+        },
+        "confusion_matrix": [
+          [
+            22,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            23,
+            2,
+            1
+          ],
+          [
+            0,
+            1,
+            19,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            26
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.41346153846153844,
+        "macro_f1": 0.3460648148148148,
+        "fsr_outdated": 0.6923076923076923,
+        "false_supported_outdated_count": 18,
+        "total_outdated_count": 26,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.47368421052631576,
+            "recall": 0.6923076923076923,
+            "f1": 0.5625,
+            "support": 26
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 26
+          },
+          "CONTRADICTED": {
+            "precision": 0.47368421052631576,
+            "recall": 0.6923076923076923,
+            "f1": 0.5625,
+            "support": 26
+          },
+          "UNSUPPORTED": {
+            "precision": 0.25,
+            "recall": 0.2692307692307692,
+            "f1": 0.25925925925925924,
+            "support": 26
+          }
+        },
+        "confusion_matrix": [
+          [
+            18,
+            0,
+            1,
+            7
+          ],
+          [
+            18,
+            0,
+            0,
+            8
+          ],
+          [
+            2,
+            0,
+            18,
+            6
+          ],
+          [
+            0,
+            0,
+            19,
+            7
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.5865384615384616,
+        "macro_f1": 0.6056374432733128,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 26,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.6923076923076923,
+            "f1": 0.8181818181818182,
+            "support": 26
+          },
+          "OUTDATED": {
+            "precision": 0.9,
+            "recall": 0.6923076923076923,
+            "f1": 0.782608695652174,
+            "support": 26
+          },
+          "CONTRADICTED": {
+            "precision": 0.47368421052631576,
+            "recall": 0.6923076923076923,
+            "f1": 0.5625,
+            "support": 26
+          },
+          "UNSUPPORTED": {
+            "precision": 0.25,
+            "recall": 0.2692307692307692,
+            "f1": 0.25925925925925924,
+            "support": 26
+          }
+        },
+        "confusion_matrix": [
+          [
+            18,
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            18,
+            0,
+            8
+          ],
+          [
+            0,
+            2,
+            18,
+            6
+          ],
+          [
+            0,
+            0,
+            19,
+            7
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "Culture & Media": {
+      "count": 64,
+      "static_heuristic": {
+        "accuracy": 0.703125,
+        "macro_f1": 0.6185990338164251,
+        "fsr_outdated": 0.9375,
+        "false_supported_outdated_count": 15,
+        "total_outdated_count": 16,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.5,
+            "recall": 0.9375,
+            "f1": 0.6521739130434783,
+            "support": 16
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 16
+          },
+          "CONTRADICTED": {
+            "precision": 1.0,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "support": 16
+          },
+          "UNSUPPORTED": {
+            "precision": 0.8,
+            "recall": 1.0,
+            "f1": 0.8888888888888888,
+            "support": 16
+          }
+        },
+        "confusion_matrix": [
+          [
+            15,
+            0,
+            0,
+            1
+          ],
+          [
+            15,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            14,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            16
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.9375,
+        "macro_f1": 0.9394265232974911,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 16,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.9375,
+            "f1": 0.967741935483871,
+            "support": 16
+          },
+          "OUTDATED": {
+            "precision": 1.0,
+            "recall": 0.9375,
+            "f1": 0.967741935483871,
+            "support": 16
+          },
+          "CONTRADICTED": {
+            "precision": 1.0,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "support": 16
+          },
+          "UNSUPPORTED": {
+            "precision": 0.8,
+            "recall": 1.0,
+            "f1": 0.8888888888888888,
+            "support": 16
+          }
+        },
+        "confusion_matrix": [
+          [
+            15,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            15,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            14,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            16
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.421875,
+        "macro_f1": 0.36051051051051053,
+        "fsr_outdated": 0.5625,
+        "false_supported_outdated_count": 9,
+        "total_outdated_count": 16,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.42857142857142855,
+            "recall": 0.5625,
+            "f1": 0.4864864864864865,
+            "support": 16
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 16
+          },
+          "CONTRADICTED": {
+            "precision": 0.5,
+            "recall": 0.4375,
+            "f1": 0.4666666666666667,
+            "support": 16
+          },
+          "UNSUPPORTED": {
+            "precision": 0.3793103448275862,
+            "recall": 0.6875,
+            "f1": 0.4888888888888889,
+            "support": 16
+          }
+        },
+        "confusion_matrix": [
+          [
+            9,
+            0,
+            1,
+            6
+          ],
+          [
+            9,
+            0,
+            1,
+            6
+          ],
+          [
+            3,
+            0,
+            7,
+            6
+          ],
+          [
+            0,
+            0,
+            5,
+            11
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.5625,
+        "macro_f1": 0.5796031746031747,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 16,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.5625,
+            "f1": 0.72,
+            "support": 16
+          },
+          "OUTDATED": {
+            "precision": 0.75,
+            "recall": 0.5625,
+            "f1": 0.6428571428571429,
+            "support": 16
+          },
+          "CONTRADICTED": {
+            "precision": 0.5,
+            "recall": 0.4375,
+            "f1": 0.4666666666666667,
+            "support": 16
+          },
+          "UNSUPPORTED": {
+            "precision": 0.3793103448275862,
+            "recall": 0.6875,
+            "f1": 0.4888888888888889,
+            "support": 16
+          }
+        },
+        "confusion_matrix": [
+          [
+            9,
+            0,
+            1,
+            6
+          ],
+          [
+            0,
+            9,
+            1,
+            6
+          ],
+          [
+            0,
+            3,
+            7,
+            6
+          ],
+          [
+            0,
+            0,
+            5,
+            11
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "Science & Technology": {
+      "count": 56,
+      "static_heuristic": {
+        "accuracy": 0.6607142857142857,
+        "macro_f1": 0.5733563608688016,
+        "fsr_outdated": 0.8571428571428571,
+        "false_supported_outdated_count": 12,
+        "total_outdated_count": 14,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.5,
+            "recall": 0.8571428571428571,
+            "f1": 0.631578947368421,
+            "support": 14
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 14
+          },
+          "CONTRADICTED": {
+            "precision": 0.7333333333333333,
+            "recall": 0.7857142857142857,
+            "f1": 0.7586206896551724,
+            "support": 14
+          },
+          "UNSUPPORTED": {
+            "precision": 0.8235294117647058,
+            "recall": 1.0,
+            "f1": 0.9032258064516129,
+            "support": 14
+          }
+        },
+        "confusion_matrix": [
+          [
+            12,
+            0,
+            2,
+            0
+          ],
+          [
+            12,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            11,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.875,
+        "macro_f1": 0.8770000855651578,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 14,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.8571428571428571,
+            "f1": 0.9230769230769231,
+            "support": 14
+          },
+          "OUTDATED": {
+            "precision": 1.0,
+            "recall": 0.8571428571428571,
+            "f1": 0.9230769230769231,
+            "support": 14
+          },
+          "CONTRADICTED": {
+            "precision": 0.7333333333333333,
+            "recall": 0.7857142857142857,
+            "f1": 0.7586206896551724,
+            "support": 14
+          },
+          "UNSUPPORTED": {
+            "precision": 0.8235294117647058,
+            "recall": 1.0,
+            "f1": 0.9032258064516129,
+            "support": 14
+          }
+        },
+        "confusion_matrix": [
+          [
+            12,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            12,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            11,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.35714285714285715,
+        "macro_f1": 0.31375,
+        "fsr_outdated": 0.35714285714285715,
+        "false_supported_outdated_count": 5,
+        "total_outdated_count": 14,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.45454545454545453,
+            "recall": 0.35714285714285715,
+            "f1": 0.4,
+            "support": 14
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 14
+          },
+          "CONTRADICTED": {
+            "precision": 0.5454545454545454,
+            "recall": 0.42857142857142855,
+            "f1": 0.48,
+            "support": 14
+          },
+          "UNSUPPORTED": {
+            "precision": 0.2647058823529412,
+            "recall": 0.6428571428571429,
+            "f1": 0.375,
+            "support": 14
+          }
+        },
+        "confusion_matrix": [
+          [
+            5,
+            0,
+            0,
+            9
+          ],
+          [
+            5,
+            0,
+            0,
+            9
+          ],
+          [
+            1,
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            0,
+            5,
+            9
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.44642857142857145,
+        "macro_f1": 0.470328947368421,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 14,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.35714285714285715,
+            "f1": 0.5263157894736842,
+            "support": 14
+          },
+          "OUTDATED": {
+            "precision": 0.8333333333333334,
+            "recall": 0.35714285714285715,
+            "f1": 0.5,
+            "support": 14
+          },
+          "CONTRADICTED": {
+            "precision": 0.5454545454545454,
+            "recall": 0.42857142857142855,
+            "f1": 0.48,
+            "support": 14
+          },
+          "UNSUPPORTED": {
+            "precision": 0.2647058823529412,
+            "recall": 0.6428571428571429,
+            "f1": 0.375,
+            "support": 14
+          }
+        },
+        "confusion_matrix": [
+          [
+            5,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            5,
+            0,
+            9
+          ],
+          [
+            0,
+            1,
+            6,
+            7
+          ],
+          [
+            0,
+            0,
+            5,
+            9
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "Politics & Governance": {
+      "count": 40,
+      "static_heuristic": {
+        "accuracy": 0.725,
+        "macro_f1": 0.6416040100250626,
+        "fsr_outdated": 1.0,
+        "false_supported_outdated_count": 10,
+        "total_outdated_count": 10,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 10
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 10
+          },
+          "CONTRADICTED": {
+            "precision": 1.0,
+            "recall": 0.9,
+            "f1": 0.9473684210526315,
+            "support": 10
+          },
+          "UNSUPPORTED": {
+            "precision": 0.9090909090909091,
+            "recall": 1.0,
+            "f1": 0.9523809523809523,
+            "support": 10
+          }
+        },
+        "confusion_matrix": [
+          [
+            10,
+            0,
+            0,
+            0
+          ],
+          [
+            10,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            9,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_heuristic": {
+        "accuracy": 0.975,
+        "macro_f1": 0.9749373433583959,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 10,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 10
+          },
+          "OUTDATED": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 10
+          },
+          "CONTRADICTED": {
+            "precision": 1.0,
+            "recall": 0.9,
+            "f1": 0.9473684210526315,
+            "support": 10
+          },
+          "UNSUPPORTED": {
+            "precision": 0.9090909090909091,
+            "recall": 1.0,
+            "f1": 0.9523809523809523,
+            "support": 10
+          }
+        },
+        "confusion_matrix": [
+          [
+            10,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            10,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            9,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "static_neural": {
+        "accuracy": 0.475,
+        "macro_f1": 0.3910924369747899,
+        "fsr_outdated": 0.8,
+        "false_supported_outdated_count": 8,
+        "total_outdated_count": 10,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 0.4444444444444444,
+            "recall": 0.8,
+            "f1": 0.5714285714285714,
+            "support": 10
+          },
+          "OUTDATED": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 10
+          },
+          "CONTRADICTED": {
+            "precision": 0.5333333333333333,
+            "recall": 0.8,
+            "f1": 0.64,
+            "support": 10
+          },
+          "UNSUPPORTED": {
+            "precision": 0.42857142857142855,
+            "recall": 0.3,
+            "f1": 0.35294117647058826,
+            "support": 10
+          }
+        },
+        "confusion_matrix": [
+          [
+            8,
+            0,
+            0,
+            2
+          ],
+          [
+            8,
+            0,
+            0,
+            2
+          ],
+          [
+            2,
+            0,
+            8,
+            0
+          ],
+          [
+            0,
+            0,
+            7,
+            3
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      },
+      "parallax_neural": {
+        "accuracy": 0.675,
+        "macro_f1": 0.6704575163398693,
+        "fsr_outdated": 0.0,
+        "false_supported_outdated_count": 0,
+        "total_outdated_count": 10,
+        "per_class": {
+          "SUPPORTED_CURRENT": {
+            "precision": 1.0,
+            "recall": 0.8,
+            "f1": 0.8888888888888888,
+            "support": 10
+          },
+          "OUTDATED": {
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8,
+            "support": 10
+          },
+          "CONTRADICTED": {
+            "precision": 0.5333333333333333,
+            "recall": 0.8,
+            "f1": 0.64,
+            "support": 10
+          },
+          "UNSUPPORTED": {
+            "precision": 0.42857142857142855,
+            "recall": 0.3,
+            "f1": 0.35294117647058826,
+            "support": 10
+          }
+        },
+        "confusion_matrix": [
+          [
+            8,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            8,
+            0,
+            2
+          ],
+          [
+            0,
+            2,
+            8,
+            0
+          ],
+          [
+            0,
+            0,
+            7,
+            3
+          ]
+        ],
+        "labels": [
+          "SUPPORTED_CURRENT",
+          "OUTDATED",
+          "CONTRADICTED",
+          "UNSUPPORTED"
+        ]
+      }
+    }
+  }
+}

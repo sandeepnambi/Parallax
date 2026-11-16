@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{l|c|cccc|c}
+\toprule
+\textbf{System} & \textbf{Macro-F1} & \textbf{Supp-Curr F1} & \textbf{Outdated F1} & \textbf{Contra F1} & \textbf{Unsupp F1} & $\mathbf{FSR}_{\text{OUTD}} \downarrow$ \\
+\midrule
+Static Heuristic Baseline & 0.596 & 0.638 & 0.000 & 0.838 & 0.907 & 92.5\% \\
+Parallax Heuristic (Temporal) & 0.913 & 0.950 & 0.959 & 0.838 & 0.907 & 0.0\% \\
+Static Neural Baseline (Cross-Encoder) & 0.354 & 0.486 & 0.000 & 0.568 & 0.363 & 51.5\% \\
+Parallax Neural Verifier (Ours) & 0.564 & 0.675 & 0.648 & 0.568 & 0.363 & 0.0\% \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation on the Parallax Benchmark (800 test examples). $\text{FSR}_{\text{OUTD}}$ measures the percentage of superseded claims falsely certified as current.}
+\label{tab:main_results}
+\end{table*}

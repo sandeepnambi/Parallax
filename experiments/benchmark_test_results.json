@@ -1,0 +1,262 @@
+{
+  "Static Heuristic Baseline": {
+    "accuracy": 0.68125,
+    "macro_f1": 0.5956543365273019,
+    "fsr_outdated": 0.925,
+    "false_supported_outdated_count": 185,
+    "total_outdated_count": 200,
+    "per_class": {
+      "SUPPORTED_CURRENT": {
+        "precision": 0.49318801089918257,
+        "recall": 0.905,
+        "f1": 0.6384479717813051,
+        "support": 200
+      },
+      "OUTDATED": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 200
+      },
+      "CONTRADICTED": {
+        "precision": 0.8505154639175257,
+        "recall": 0.825,
+        "f1": 0.8375634517766497,
+        "support": 200
+      },
+      "UNSUPPORTED": {
+        "precision": 0.8326359832635983,
+        "recall": 0.995,
+        "f1": 0.9066059225512528,
+        "support": 200
+      }
+    },
+    "confusion_matrix": [
+      [
+        181,
+        0,
+        16,
+        3
+      ],
+      [
+        185,
+        0,
+        12,
+        3
+      ],
+      [
+        1,
+        0,
+        165,
+        34
+      ],
+      [
+        0,
+        0,
+        1,
+        199
+      ]
+    ],
+    "labels": [
+      "SUPPORTED_CURRENT",
+      "OUTDATED",
+      "CONTRADICTED",
+      "UNSUPPORTED"
+    ]
+  },
+  "Parallax Heuristic (Temporal)": {
+    "accuracy": 0.9125,
+    "macro_f1": 0.9132124576804077,
+    "fsr_outdated": 0.0,
+    "false_supported_outdated_count": 0,
+    "total_outdated_count": 200,
+    "per_class": {
+      "SUPPORTED_CURRENT": {
+        "precision": 1.0,
+        "recall": 0.905,
+        "f1": 0.9501312335958005,
+        "support": 200
+      },
+      "OUTDATED": {
+        "precision": 0.9946236559139785,
+        "recall": 0.925,
+        "f1": 0.9585492227979274,
+        "support": 200
+      },
+      "CONTRADICTED": {
+        "precision": 0.8505154639175257,
+        "recall": 0.825,
+        "f1": 0.8375634517766497,
+        "support": 200
+      },
+      "UNSUPPORTED": {
+        "precision": 0.8326359832635983,
+        "recall": 0.995,
+        "f1": 0.9066059225512528,
+        "support": 200
+      }
+    },
+    "confusion_matrix": [
+      [
+        181,
+        0,
+        16,
+        3
+      ],
+      [
+        0,
+        185,
+        12,
+        3
+      ],
+      [
+        0,
+        1,
+        165,
+        34
+      ],
+      [
+        0,
+        0,
+        1,
+        199
+      ]
+    ],
+    "labels": [
+      "SUPPORTED_CURRENT",
+      "OUTDATED",
+      "CONTRADICTED",
+      "UNSUPPORTED"
+    ]
+  },
+  "Static Neural Baseline (Cross-Encoder)": {
+    "accuracy": 0.40625,
+    "macro_f1": 0.3542147667147667,
+    "fsr_outdated": 0.515,
+    "false_supported_outdated_count": 103,
+    "total_outdated_count": 200,
+    "per_class": {
+      "SUPPORTED_CURRENT": {
+        "precision": 0.4636363636363636,
+        "recall": 0.51,
+        "f1": 0.4857142857142857,
+        "support": 200
+      },
+      "OUTDATED": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 200
+      },
+      "CONTRADICTED": {
+        "precision": 0.5208333333333334,
+        "recall": 0.625,
+        "f1": 0.5681818181818182,
+        "support": 200
+      },
+      "UNSUPPORTED": {
+        "precision": 0.28823529411764703,
+        "recall": 0.49,
+        "f1": 0.362962962962963,
+        "support": 200
+      }
+    },
+    "confusion_matrix": [
+      [
+        102,
+        0,
+        7,
+        91
+      ],
+      [
+        103,
+        0,
+        6,
+        91
+      ],
+      [
+        15,
+        0,
+        125,
+        60
+      ],
+      [
+        0,
+        0,
+        102,
+        98
+      ]
+    ],
+    "labels": [
+      "SUPPORTED_CURRENT",
+      "OUTDATED",
+      "CONTRADICTED",
+      "UNSUPPORTED"
+    ]
+  },
+  "Parallax Neural Verifier (Ours)": {
+    "accuracy": 0.535,
+    "macro_f1": 0.563610053006217,
+    "fsr_outdated": 0.0,
+    "false_supported_outdated_count": 0,
+    "total_outdated_count": 200,
+    "per_class": {
+      "SUPPORTED_CURRENT": {
+        "precision": 1.0,
+        "recall": 0.51,
+        "f1": 0.6754966887417219,
+        "support": 200
+      },
+      "OUTDATED": {
+        "precision": 0.8728813559322034,
+        "recall": 0.515,
+        "f1": 0.6477987421383647,
+        "support": 200
+      },
+      "CONTRADICTED": {
+        "precision": 0.5208333333333334,
+        "recall": 0.625,
+        "f1": 0.5681818181818182,
+        "support": 200
+      },
+      "UNSUPPORTED": {
+        "precision": 0.28823529411764703,
+        "recall": 0.49,
+        "f1": 0.362962962962963,
+        "support": 200
+      }
+    },
+    "confusion_matrix": [
+      [
+        102,
+        0,
+        7,
+        91
+      ],
+      [
+        0,
+        103,
+        6,
+        91
+      ],
+      [
+        0,
+        15,
+        125,
+        60
+      ],
+      [
+        0,
+        0,
+        102,
+        98
+      ]
+    ],
+    "labels": [
+      "SUPPORTED_CURRENT",
+      "OUTDATED",
+      "CONTRADICTED",
+      "UNSUPPORTED"
+    ]
+  }
+}

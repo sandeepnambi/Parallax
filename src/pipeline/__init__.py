@@ -1,6 +1,6 @@
 """Parallax end-to-end pipeline components."""
 from .decomposer import ClaimDecomposer
 from .matcher import EvidenceMatcher
-from .auditor import ParallaxAuditor
+from .auditor import ParallaxAuditor, NeuralCrossEncoderNLI
 
-__all__ = ["ClaimDecomposer", "EvidenceMatcher", "ParallaxAuditor"]
+__all__ = ["ClaimDecomposer", "EvidenceMatcher", "ParallaxAuditor", "NeuralCrossEncoderNLI"]

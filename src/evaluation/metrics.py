@@ -5,7 +5,7 @@ and the signature metric: False-Support Rate on Outdated Claims (FSR_outdated).
 Also includes publication-ready LaTeX table exporters.
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix, accuracy_score
 
@@ -91,7 +91,7 @@ def format_metrics_summary(results: Dict[str, Any], model_name: str = "Model") -
     return "\n".join(lines)
 
 
-def export_latex_table(results_dict: Dict[str, Dict[str, Any]], filepath: str):
+def export_latex_table(results_dict: Dict[str, Dict[str, Any]], filepath: str, caption: Optional[str] = None):
     """
     Exports a comparative results table formatted for ACL/EMNLP LaTeX submissions.
     results_dict: { model_name: metrics_dict }
@@ -115,10 +115,11 @@ def export_latex_table(results_dict: Dict[str, Dict[str, Any]], filepath: str):
         fsr = res["fsr_outdated"] * 100.0
         row_tex = f"{name} & {macro:.3f} & {sc_f1:.3f} & {out_f1:.3f} & {con_f1:.3f} & {un_f1:.3f} & {fsr:.1f}\\% \\\\"
         tex.append(row_tex)
+    def_caption = r"Evaluation on the Parallax Benchmark (800 test examples). $\text{FSR}_{\text{OUTD}}$ measures the percentage of superseded claims falsely certified as current."
     tex.extend([
         r"\bottomrule",
         r"\end{tabular}",
-        r"\caption{Evaluation on Parallax Pilot Benchmark (600 examples). $\text{FSR}_{\text{OUTD}}$ measures the percentage of superseded claims falsely certified as supported.}",
+        f"\\caption{{{caption or def_caption}}}",
         r"\label{tab:main_results}",
         r"\end{table*}",
     ])

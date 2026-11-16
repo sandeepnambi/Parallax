@@ -60,6 +60,33 @@ class NeuralCrossEncoderNLI:
         label = str(self.id2label.get(pred_id, pred_id)).upper() # ENTAILMENT, CONTRADICTION, NEUTRAL
         return label
 
+    def predict_batch(
+        self,
+        premises: List[str],
+        hypotheses: List[str],
+        batch_size: int = 32
+    ) -> List[str]:
+        if not premises or not hypotheses or self.tokenizer is None:
+            return ["NEUTRAL"] * len(premises)
+        tokenizer: Any = self.tokenizer
+        preds: List[str] = []
+        total = len(premises)
+        for i in range(0, total, batch_size):
+            batch_prem = premises[i:i + batch_size]
+            batch_hyp = hypotheses[i:i + batch_size]
+            inputs = tokenizer(
+                batch_prem, batch_hyp,
+                padding=True, truncation=True, max_length=256,
+                return_tensors="pt"
+            ).to(self.device)
+            with torch.no_grad():
+                logits = self.model(**inputs).logits
+                pred_ids = logits.argmax(dim=-1).cpu().tolist()
+            for pid in pred_ids:
+                label = str(self.id2label.get(pid, pid)).upper()
+                preds.append(label)
+        return preds
+
 
 class ParallaxAuditor:
     """
