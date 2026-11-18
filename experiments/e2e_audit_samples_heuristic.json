@@ -86,24 +86,24 @@
     "answer_text": "The current chief of the Fullerton Police Department is David Hendricks.",
     "reference_time": "2024-12-01",
     "total_claims": 1,
-    "overall_status": "TRUSTWORTHY_CURRENT",
-    "truthfulness_score": 1.0,
+    "overall_status": "HALLUCINATED_RESPONSE",
+    "truthfulness_score": 0.0,
     "claim_breakdown": {
-      "SUPPORTED_CURRENT": 1,
+      "SUPPORTED_CURRENT": 0,
       "OUTDATED": 0,
-      "CONTRADICTED": 0,
+      "CONTRADICTED": 1,
       "UNSUPPORTED": 0
     },
     "claim_audits": [
       {
         "claim_index": 1,
         "claim_text": "The current chief of the Fullerton Police Department is David Hendricks.",
-        "verdict": "SUPPORTED_CURRENT",
+        "verdict": "CONTRADICTED",
         "evidence_matched": "The current chief is Jon Radus.",
         "evidence_source": "Fullerton Police Department (id: 9921)",
         "match_score": 0.2873,
-        "temporal_status": "ACTIVE / VALID",
-        "explanation": "Evidence entails claim and is valid at evaluation reference time."
+        "temporal_status": "CONFLICTING (evidence valid 2024-08-01 to present)",
+        "explanation": "Evidence directly refutes or contradicts the claim."
       }
     ]
   },

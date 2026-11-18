@@ -22,6 +22,14 @@ import time
 from collections import defaultdict
 from typing import List, Dict, Any, Tuple
 
+# Ensure src and root are in sys.path
+_cur = os.path.dirname(os.path.abspath(__file__))
+_src = os.path.abspath(os.path.join(_cur, "..", "src"))
+_root = os.path.abspath(os.path.join(_cur, ".."))
+for _p in [_src, _root]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 

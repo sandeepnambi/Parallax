@@ -4,6 +4,8 @@ Full multi-claim RAG auditing pipeline:
 Decomposition -> Evidence Sentence Matching -> Neural/Heuristic NLI -> Temporal Arbitration -> Audit Report
 """
 
+import json
+from datetime import datetime
 from typing import List, Dict, Any, Optional, Union
 
 import torch
@@ -12,10 +14,12 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 try:
     from pipeline.decomposer import ClaimDecomposer
     from pipeline.matcher import EvidenceMatcher
+    from pipeline.temporal_resolver import TemporalAnchorResolver
     from verifier.static_baseline import HeuristicNLI
 except ImportError:
     from src.pipeline.decomposer import ClaimDecomposer
     from src.pipeline.matcher import EvidenceMatcher
+    from src.pipeline.temporal_resolver import TemporalAnchorResolver
     from src.verifier.static_baseline import HeuristicNLI
 
 
@@ -99,6 +103,7 @@ class ParallaxAuditor:
     ):
         self.decomposer = ClaimDecomposer()
         self.matcher = EvidenceMatcher()
+        self.temporal_resolver = TemporalAnchorResolver()
         self.default_ref_time = default_ref_time
         
         self.nli: Union[NeuralCrossEncoderNLI, HeuristicNLI]
@@ -188,18 +193,33 @@ class ParallaxAuditor:
             else:
                 nli_rel = self.nli.predict(claim=claim, evidence=contextualized_premise, answer_entity="")
                 
-            # 4. Temporal Arbitration
+            # 4. Temporal Arbitration with Temporal Anchor Resolver
+            anchor_info = self.temporal_resolver.extract_temporal_anchor(claim)
+            
             if nli_rel == "ENTAILMENT":
-                is_stale = False
-                if valid_to != "present" and valid_to <= ref_time:
-                    is_stale = True
-                elif superseded_by is not None and superseded_by <= ref_time:
-                    is_stale = True
-                    
-                if is_stale:
+                temp_eval = self.temporal_resolver.arbitrate_temporal_validity(
+                    anchor_info=anchor_info,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                    reference_time=ref_time
+                )
+                
+                if temp_eval["is_stale"]:
                     verdict = "OUTDATED"
-                    temp_status = f"SUPERSEDED on {valid_to} (expired before ref_time {ref_time})"
+                    staleness_days = None
+                    try:
+                        ref_dt = datetime.strptime(ref_time[:10], "%Y-%m-%d")
+                        vt_dt = datetime.strptime(valid_to[:10], "%Y-%m-%d")
+                        staleness_days = max(0, (ref_dt - vt_dt).days)
+                    except Exception:
+                        pass
+                    stale_str = f" ({staleness_days} days stale)" if staleness_days is not None else ""
+                    temp_status = f"SUPERSEDED on {valid_to} (expired before ref_time {ref_time}){stale_str}"
                     expl = "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
+                elif temp_eval["verdict_modifier"] == "HISTORICALLY_VALID":
+                    verdict = "SUPPORTED_CURRENT"
+                    temp_status = "HISTORICALLY VALID (consistent with claim anchor)"
+                    expl = temp_eval["reason"]
                 else:
                     verdict = "SUPPORTED_CURRENT"
                     temp_status = "ACTIVE / VALID"
@@ -223,6 +243,7 @@ class ParallaxAuditor:
                 "evidence_matched": matched_sent,
                 "evidence_source": doc_info,
                 "match_score": match["match_score"],
+                "temporal_anchor": anchor_info["anchor_type"],
                 "temporal_status": temp_status,
                 "explanation": expl,
             })
@@ -280,6 +301,90 @@ class ParallaxAuditor:
             
         lines.append("============================================================")
         return "\n".join(lines)
+
+    def format_html_report(self, audit: Dict[str, Any]) -> str:
+        """Generates a standalone, beautifully styled HTML audit report."""
+        badge_colors = {
+            "SUPPORTED_CURRENT": "#28a745",
+            "OUTDATED": "#fd7e14",
+            "CONTRADICTED": "#dc3545",
+            "UNSUPPORTED": "#6c757d",
+        }
+        claims_html = []
+        for c in audit["claim_audits"]:
+            color = badge_colors.get(c["verdict"], "#333")
+            ev_html = ""
+            if c.get("evidence_matched"):
+                ev_html = f"""
+                <div style="margin-top: 6px; padding: 8px; background: #f8f9fa; border-left: 3px solid {color}; border-radius: 4px;">
+                    <div><strong>Evidence:</strong> "{c['evidence_matched']}"</div>
+                    <div style="font-size: 0.85em; color: #555; margin-top: 4px;"><strong>Source:</strong> {c['evidence_source']} | <strong>Status:</strong> {c['temporal_status']}</div>
+                </div>
+                """
+            claims_html.append(f"""
+            <div style="margin-bottom: 14px; padding: 12px; border: 1px solid #e9ecef; border-radius: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">Claim {c['claim_index']}</span>
+                    <span style="background-color: {color}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">{c['verdict']}</span>
+                </div>
+                <div style="margin: 8px 0; font-size: 1.05em;">"{c['claim_text']}"</div>
+                {ev_html}
+                <div style="margin-top: 6px; font-size: 0.85em; color: #444;"><em>Diagnosis:</em> {c['explanation']}</div>
+            </div>
+            """)
+
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Parallax RAG Audit Report</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 900px; margin: 30px auto; padding: 20px; color: #212529; }}
+        .header {{ background: #212529; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }}
+        .status-box {{ display: flex; gap: 15px; margin-top: 15px; }}
+        .metric-card {{ background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 6px; flex: 1; }}
+        .section-title {{ font-size: 1.1em; font-weight: bold; margin: 20px 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; }}
+        .answer-box {{ background: #eef2f7; padding: 15px; border-radius: 6px; font-style: italic; line-height: 1.5; }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="margin: 0 0 10px 0;">Parallax End-to-End RAG Audit Report</h2>
+        <div><strong>Query:</strong> {audit['query']}</div>
+        <div style="font-size: 0.9em; opacity: 0.85;">Anchor Reference Time: {audit['reference_time']}</div>
+        <div class="status-box">
+            <div class="metric-card">
+                <div style="font-size: 0.8em; text-transform: uppercase;">Overall Status</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{audit['overall_status']}</div>
+            </div>
+            <div class="metric-card">
+                <div style="font-size: 0.8em; text-transform: uppercase;">Trust Score</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{audit['truthfulness_score'] * 100:.1f}%</div>
+            </div>
+            <div class="metric-card">
+                <div style="font-size: 0.8em; text-transform: uppercase;">Claims Current</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{audit['claim_breakdown']['SUPPORTED_CURRENT']} / {audit['total_claims']}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">Audited Answer Paragraph</div>
+    <div class="answer-box">"{audit['answer_text']}"</div>
+
+    <div class="section-title">Claim-by-Claim Breakdown</div>
+    {''.join(claims_html)}
+</body>
+</html>
+"""
+        return html
+
+    def export_json(self, audit: Dict[str, Any], filepath: str):
+        """Exports the audit report to a structured JSON file."""
+        import os
+        os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(audit, f, indent=2)
+        print(f"Exported audit report JSON to {filepath}")
 
 
 if __name__ == "__main__":

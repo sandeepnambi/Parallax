@@ -113,3 +113,32 @@ class EvidenceMatcher:
             return best_match
             
         return None
+
+    def rank_matches(
+        self,
+        claim: str,
+        retrieved_docs: List[Dict[str, Any]],
+        top_k: int = 3,
+        min_threshold: float = 0.10
+    ) -> List[Dict[str, Any]]:
+        """
+        Ranks and returns the top-k matched evidence sentences across retrieved documents.
+        """
+        candidates = []
+        for doc in retrieved_docs:
+            doc_text = doc.get("text", "")
+            sentences = ClaimDecomposer.split_sentences(doc_text)
+            for sent in sentences:
+                score = self.score_match(claim, sent)
+                if score >= min_threshold:
+                    candidates.append({
+                        "matched_sentence": sent,
+                        "match_score": round(score, 4),
+                        "doc_id": doc.get("doc_id"),
+                        "doc_title": doc.get("doc_title"),
+                        "valid_from": doc.get("valid_from"),
+                        "valid_to": doc.get("valid_to", "present"),
+                        "superseded_by": doc.get("superseded_by"),
+                    })
+        candidates.sort(key=lambda x: x["match_score"], reverse=True)
+        return candidates[:top_k]
