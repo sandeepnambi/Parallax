@@ -2,7 +2,7 @@
 
 **Working Title**: *Parallax: A Benchmark and Verifier for Claim-Level Superseded-Evidence Detection in Retrieval-Augmented Generation*  
 **Target Venues**: ACL / EMNLP / NAACL (Short or Long Paper Track)  
-**Artifact Directory**: [`paper/`](file:///c:/Users/venka/Downloads/Parallax-main/Parallax-main/paper/)
+**Artifact Directory**: [`paper/`](paper/)
 
 ---
 
@@ -139,7 +139,7 @@ We evaluate Static Baselines against the Parallax Two-Stage Verifiers on both th
 | **Static Neural (Cross-Encoder)** | 40.62% | 0.354 | 0.486 | 0.000 | 0.568 | 0.363 | **51.50%** |
 | **Parallax Neural Verifier (Ours)** | **53.50%** | **0.564** | **0.675** | **0.648** | **0.568** | **0.363** | **0.00%** |
 
-*(Table exported directly to [`experiments/table_test_results.tex`](file:///c:/Users/venka/Downloads/Parallax-main/Parallax-main/experiments/table_test_results.tex))*
+*(Table exported directly to [`experiments/table_test_results.tex`](../experiments/table_test_results.tex))*
 
 ### Pilot Benchmark Results (600 Examples)
 
@@ -148,7 +148,7 @@ We evaluate Static Baselines against the Parallax Two-Stage Verifiers on both th
 | **Static NLI Baseline** | 0.565 | 0.643 | 0.000 | 0.769 | 0.847 | **92.50%** |
 | **Parallax Verifier (Ours)** | **0.883** | **0.956** | **0.959** | **0.769** | **0.847** | **0.00%** |
 
-*(Table exported to [`paper/tables/table_main_results.tex`](file:///c:/Users/venka/Downloads/Parallax-main/Parallax-main/paper/tables/table_main_results.tex))*
+*(Table exported to [`paper/tables/table_main_results.tex`](tables/table_main_results.tex))*
 
 ### Key Findings
 1. **Catastrophic Failure of Static Checkers**: Static baselines fail completely on outdated claims ($\text{F1} = 0.000$), suffering an $\text{FSR}_{\text{OUTD}}$ of **92.50%** (185 out of 200 outdated claims falsely certified as valid). Because the evidence text linguistically entails the claim, static checkers are blind to the fact that the evidence itself is expired.
@@ -157,7 +157,7 @@ We evaluate Static Baselines against the Parallax Two-Stage Verifiers on both th
 
 ### Confusion Matrix Breakdown
 
-*(Reference: [`paper/tables/table_confusion.tex`](file:///c:/Users/venka/Downloads/Parallax-main/Parallax-main/paper/tables/table_confusion.tex))*
+*(Reference: [`paper/tables/table_confusion.tex`](tables/table_confusion.tex))*
 
 ```text
 Static Baseline:

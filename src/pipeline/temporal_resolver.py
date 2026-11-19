@@ -120,42 +120,136 @@ class TemporalAnchorResolver:
         anchor_info: Dict[str, Any],
         valid_from: Optional[str],
         valid_to: Optional[str],
+        superseded_by: Optional[str] = None,
         reference_time: str = "2024-12-01",
+        require_full_coverage: bool = True,
     ) -> Dict[str, Any]:
         """
         Arbitrates whether evidence validity satisfies the claim's temporal anchor.
+        
+        Args:
+            anchor_info: Dict from extract_temporal_anchor.
+            valid_from: Start of evidence validity.
+            valid_to: End of evidence validity or 'present'.
+            superseded_by: Date or identifier indicating when/by what evidence was superseded.
+            reference_time: Evaluation anchor date (YYYY-MM-DD).
+            require_full_coverage: If True, historical interval claims require evidence
+                validity to completely cover the claimed interval rather than just overlapping it.
         """
         anchor_type = anchor_info["anchor_type"]
-        v_from = str(valid_from)[:10] if valid_from and str(valid_from).lower() != "none" else "1900-01-01"
-        v_to = str(valid_to)[:10] if valid_to and str(valid_to).lower() not in ("none", "present") else "9999-12-31"
+        v_from = str(valid_from)[:10] if valid_from and str(valid_from).lower() not in ("none", "null", "") else "1900-01-01"
+        v_to = str(valid_to)[:10] if valid_to and str(valid_to).lower() not in ("none", "null", "present", "") else "9999-12-31"
 
-        if anchor_type == "HISTORICAL" and anchor_info["target_interval"]:
+        # Parse and normalize superseded_by metadata
+        s_by: Optional[str] = None
+        if superseded_by is not None:
+            s_str = str(superseded_by).strip()
+            if s_str.lower() not in ("none", "null", "false", ""):
+                s_by = s_str
+
+        # Determine if evidence is superseded or expired at reference_time
+        is_stale = False
+        stale_reason = ""
+        if v_to != "9999-12-31" and v_to <= reference_time:
+            is_stale = True
+            stale_reason = f"Evidence expired on {v_to} prior to reference_time {reference_time}."
+        elif s_by is not None:
+            # Check if superseded_by contains an ISO date
+            date_match = self.DATE_PATTERN.search(s_by)
+            if date_match:
+                s_date = date_match.group(1)
+                if s_date <= reference_time:
+                    is_stale = True
+                    stale_reason = f"Evidence was explicitly superseded on {s_date} prior to reference_time {reference_time}."
+            elif re.match(r"^\d{4}-\d{2}-\d{2}", s_by):
+                if s_by[:10] <= reference_time:
+                    is_stale = True
+                    stale_reason = f"Evidence was explicitly superseded on {s_by[:10]} prior to reference_time {reference_time}."
+            else:
+                # Explicit supersession indicated by replacement identifier or flag
+                is_stale = True
+                stale_reason = f"Evidence was explicitly superseded by {s_by}."
+
+        # Compute effective validity end for interval checks
+        effective_v_to = v_to
+        if s_by is not None:
+            date_match = self.DATE_PATTERN.search(s_by) or re.match(r"^(\d{4}-\d{2}-\d{2})", s_by)
+            if date_match:
+                s_date = date_match.group(1)
+                if s_date < effective_v_to:
+                    effective_v_to = s_date
+
+        if anchor_type == "HISTORICAL" and anchor_info.get("target_interval"):
             claim_start, claim_end = anchor_info["target_interval"]
-            # Check interval overlap: max(v_from, claim_start) <= min(v_to, claim_end)
-            overlaps = max(v_from, claim_start) <= min(v_to, claim_end)
-            if overlaps:
+            
+            # Full coverage: evidence validity encompasses the entire claim interval
+            covers = (v_from <= claim_start and effective_v_to >= claim_end)
+            # Overlap: evidence validity shares some temporal interval with claim
+            overlaps = max(v_from, claim_start) <= min(effective_v_to, claim_end)
+
+            if covers:
                 return {
                     "verdict_modifier": "HISTORICALLY_VALID",
                     "is_stale": False,
-                    "reason": f"Claim targets historical interval [{claim_start}, {claim_end}], which falls within evidence validity [{v_from}, {v_to}].",
+                    "reason": (
+                        f"Claim targets historical interval [{claim_start}, {claim_end}], "
+                        f"which is fully covered by evidence validity [{v_from}, {v_to}]."
+                    ),
                 }
+            elif overlaps:
+                if require_full_coverage:
+                    return {
+                        "verdict_modifier": "TEMPORALLY_INCOMPATIBLE",
+                        "is_stale": False,
+                        "reason": (
+                            f"Claim targets historical interval [{claim_start}, {claim_end}], "
+                            f"but evidence validity [{v_from}, {v_to}] only partially overlaps "
+                            f"and does not cover the complete period."
+                        ),
+                    }
+                else:
+                    return {
+                        "verdict_modifier": "HISTORICALLY_VALID",
+                        "is_stale": False,
+                        "reason": (
+                            f"Claim targets historical interval [{claim_start}, {claim_end}], "
+                            f"which partially overlaps evidence validity [{v_from}, {v_to}]."
+                        ),
+                    }
             else:
                 return {
                     "verdict_modifier": "TEMPORALLY_INCOMPATIBLE",
                     "is_stale": False,
-                    "reason": f"Claim targets historical interval [{claim_start}, {claim_end}], but evidence was only valid [{v_from}, {v_to}].",
+                    "reason": (
+                        f"Claim targets historical interval [{claim_start}, {claim_end}], "
+                        f"but evidence was only valid [{v_from}, {v_to}] (no temporal overlap)."
+                    ),
+                }
+
+        if anchor_type == "HISTORICAL":
+            # Historical claim without a specific interval (e.g. "Formerly, X was Y")
+            if is_stale:
+                return {
+                    "verdict_modifier": "HISTORICALLY_VALID",
+                    "is_stale": False,
+                    "reason": (
+                        f"Claim asserts a historical or past state, supported by past evidence "
+                        f"(valid [{v_from}, {v_to}])."
+                    ),
+                }
+            else:
+                return {
+                    "verdict_modifier": "ACTIVE",
+                    "is_stale": False,
+                    "reason": f"Claim asserts past fact and evidence remains active (valid [{v_from}, {v_to}]).",
                 }
 
         # Present or Implicit Present
-        is_stale = False
-        if v_to != "9999-12-31" and v_to <= reference_time:
-            is_stale = True
-
         return {
             "verdict_modifier": "OUTDATED" if is_stale else "ACTIVE",
             "is_stale": is_stale,
             "reason": (
-                f"Evidence expired on {v_to} prior to reference_time {reference_time}."
+                stale_reason
                 if is_stale
                 else "Evidence is active at reference_time."
             ),
