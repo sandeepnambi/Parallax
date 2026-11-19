@@ -339,7 +339,19 @@ def clean_and_scale_benchmark(
 
 
 if __name__ == "__main__":
-    raw_path = r"d:\Engineering\UROP\Projects\Parallax\Datasets\D1-HoH\hoh_qas_240601_241201.parquet"
-    bench_dir = r"d:\Engineering\UROP\Projects\Parallax\data\benchmark"
-    rev_dir = r"d:\Engineering\UROP\Projects\Parallax\data\review"
-    clean_and_scale_benchmark(raw_path, bench_dir, rev_dir)
+    import argparse
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    default_raw = os.path.join(base_dir, "Datasets", "D1-HoH", "hoh_qas_240601_241201.parquet")
+    default_bench = os.path.join(base_dir, "data", "benchmark")
+    default_rev = os.path.join(base_dir, "data", "review")
+
+    parser = argparse.ArgumentParser(description="Clean and scale Parallax benchmark")
+    parser.add_argument("--raw_path", type=str, default=default_raw, help="Path to raw HoH parquet file")
+    parser.add_argument("--bench_dir", type=str, default=default_bench, help="Benchmark output directory")
+    parser.add_argument("--rev_dir", type=str, default=default_rev, help="Review sample output directory")
+    args = parser.parse_args()
+
+    if not os.path.exists(args.raw_path):
+        print(f"Warning: Raw dataset not found at {args.raw_path}. Please place the dataset file there to rebuild.")
+    else:
+        clean_and_scale_benchmark(args.raw_path, args.bench_dir, args.rev_dir)

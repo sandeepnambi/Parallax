@@ -73,6 +73,25 @@ class HeuristicNLI:
                 return "CONTRADICTION"
             return "NEUTRAL"
             
+        # Check salient named entities (proper nouns / capitalized phrases)
+        common_words = {"the", "a", "an", "based", "according", "furthermore", "additionally", "moreover", "in", "to", "also", "there"}
+        claim_entities = [
+            e.lower() for e in re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", actual_claim)
+            if e.lower() not in common_words
+        ]
+        ev_entities = [
+            e.lower() for e in re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", actual_evidence)
+            if e.lower() not in common_words
+        ]
+        
+        # If claim asserts a specific named entity not found in evidence
+        unsupported_entities = [e for e in claim_entities if e not in ev_clean]
+        if unsupported_entities and len(overlap) >= 2:
+            # If evidence asserts an alternative named entity, it is a direct entity contradiction
+            if ev_entities and any(ee not in claim_clean for ee in ev_entities):
+                return "CONTRADICTION"
+            return "NEUTRAL"
+
         # Check non-overlapping content words
         unsupported_tokens = claim_tokens - ev_tokens
         unsupported_ratio = len(unsupported_tokens) / len(claim_tokens)

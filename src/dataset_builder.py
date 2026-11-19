@@ -230,6 +230,17 @@ def build_pilot_dataset(
 
 
 if __name__ == "__main__":
-    raw_path = r"d:\Engineering\UROP\Projects\Parallax\Datasets\D1-HoH\hoh_qas_240601_241201.parquet"
-    out_dir = r"d:\Engineering\UROP\Projects\Parallax\data\pilot"
-    build_pilot_dataset(raw_path, out_dir)
+    import argparse
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    default_raw = os.path.join(base_dir, "Datasets", "D1-HoH", "hoh_qas_240601_241201.parquet")
+    default_out = os.path.join(base_dir, "data", "pilot")
+
+    parser = argparse.ArgumentParser(description="Build Parallax pilot dataset")
+    parser.add_argument("--raw_path", type=str, default=default_raw, help="Path to raw HoH parquet file")
+    parser.add_argument("--out_dir", type=str, default=default_out, help="Output directory for pilot benchmark")
+    args = parser.parse_args()
+
+    if not os.path.exists(args.raw_path):
+        print(f"Warning: Raw dataset not found at {args.raw_path}. Please place the dataset file there to rebuild.")
+    else:
+        build_pilot_dataset(args.raw_path, args.out_dir)

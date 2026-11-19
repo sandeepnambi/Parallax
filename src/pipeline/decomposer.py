@@ -37,11 +37,10 @@ class ClaimDecomposer:
         # Replace decimals like 3.14 with special token
         s = re.sub(r"(\d+)\.(\d+)", r"\1<DECIMAL>\2", s)
         
-        # Protect abbreviations like U.S., Inc., Dr., etc.
-        abbrevs = ["u.s.", "u.k.", "e.g.", "i.e.", "dr.", "mr.", "mrs.", "ms.", "inc.", "ltd.", "co.", "vs.", "approx."]
-        for abb in abbrevs:
-            pattern = re.compile(re.escape(abb), re.IGNORECASE)
-            s = pattern.sub(abb.replace(".", "<DOT>"), s)
+        # Protect abbreviations like U.S., Inc., Dr., etc. while preserving original case
+        abbrevs = [r"\bu\.s\.", r"\bu\.k\.", r"\be\.g\.", r"\bi\.e\.", r"\bdr\.", r"\bmr\.", r"\bmrs\.", r"\bms\.", r"\binc\.", r"\bltd\.", r"\bco\.", r"\bvs\.", r"\bapprox\."]
+        for pat in abbrevs:
+            s = re.sub(pat, lambda m: m.group(0).replace(".", "<DOT>"), s, flags=re.IGNORECASE)
             
         # Split on sentence boundaries
         raw_sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"'])", s)
@@ -92,3 +91,31 @@ class ClaimDecomposer:
                 claims.append(cleaned)
                 
         return claims
+
+    @staticmethod
+    def extract_temporal_cues(sentence: str) -> List[str]:
+        """Extracts temporal cues and years present in a claim sentence."""
+        patterns = [
+            r"\b(currently|presently|as of \d{4}|in \d{4}|since \d{4}|formerly|previously|latest|recent)\b",
+            r"\b(19\d{2}|20\d{2})\b"
+        ]
+        cues = []
+        for pat in patterns:
+            matches = re.findall(pat, sentence, re.IGNORECASE)
+            cues.extend([m.lower() for m in matches])
+        return sorted(list(set(cues)))
+
+    def decompose_with_metadata(self, answer_text: str) -> List[dict]:
+        """Decomposes answer paragraph into claims with attached linguistic and temporal metadata."""
+        raw_claims = self.decompose(answer_text)
+        metadata_claims = []
+        for idx, claim in enumerate(raw_claims):
+            cues = self.extract_temporal_cues(claim)
+            metadata_claims.append({
+                "claim_index": idx + 1,
+                "claim_text": claim,
+                "word_count": len(claim.split()),
+                "temporal_cues": cues,
+                "has_temporal_anchor": len(cues) > 0
+            })
+        return metadata_claims
