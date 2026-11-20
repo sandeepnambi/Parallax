@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{l|c|cccc|c}
+\toprule
+\textbf{System} & \textbf{Macro-F1} & \textbf{Supp-Curr F1} & \textbf{Outdated F1} & \textbf{Contra F1} & \textbf{Unsupp F1} & $\mathbf{FSR}_{\text{OUTD}} \downarrow$ \\
+\midrule
+Static Heuristic Baseline & 0.462 & 0.464 & 0.000 & 0.545 & 0.840 & 46.5\% \\
+Static Zero-Shot Neural Baseline & 0.338 & 0.504 & 0.000 & 0.505 & 0.342 & 51.5\% \\
+Dynamic Heuristic Parallax (Ours) & 0.617 & 0.567 & 0.517 & 0.545 & 0.840 & 11.5\% \\
+Dynamic Zero-Shot Neural Parallax (Ours) & 0.482 & 0.598 & 0.485 & 0.505 & 0.342 & 19.5\% \\
+\bottomrule
+\end{tabular}
+\caption{Benchmark v2 evaluation across comparable systems.}
+\label{tab:main_results}
+\end{table*}

@@ -53,7 +53,15 @@ class NeuralCrossEncoderNLI:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name).to(self.device)
         self.model.eval()
-        self.id2label = getattr(self.model.config, "id2label", {})
+        raw_id2label = getattr(self.model.config, "id2label", {})
+        self.id2label = {}
+        for k, v in raw_id2label.items():
+            val = str(v).upper()
+            try:
+                self.id2label[int(k)] = val
+            except ValueError:
+                pass
+            self.id2label[str(k)] = val
         
     def predict(
         self,
