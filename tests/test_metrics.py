@@ -1,4 +1,3 @@
-import pytest
 from evaluation.metrics import compute_parallax_metrics
 
 

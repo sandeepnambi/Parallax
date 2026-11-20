@@ -1,4 +1,3 @@
-import pytest
 from verbalizer import verbalize_claim
 
 

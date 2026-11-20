@@ -10,8 +10,7 @@ Prevents false "OUTDATED" certification for claims that accurately describe hist
 """
 
 import re
-from datetime import datetime
-from typing import Dict, Any, Optional, Tuple, List
+from typing import Dict, Any, Optional, Tuple
 
 
 class TemporalAnchorResolver:

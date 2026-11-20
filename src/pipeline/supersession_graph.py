@@ -7,7 +7,6 @@ and identifies modern replacement facts.
 """
 
 from typing import Dict, Any, List, Optional
-from datetime import datetime
 
 
 class FactNode:

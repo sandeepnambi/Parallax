@@ -1,4 +1,3 @@
-import pytest
 from verifier.static_baseline import HeuristicNLI, StaticBaselineVerifier
 from verifier.temporal_arbiter import ParallaxTemporalVerifier
 

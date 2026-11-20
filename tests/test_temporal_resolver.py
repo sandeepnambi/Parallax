@@ -1,4 +1,3 @@
-import pytest
 from pipeline.temporal_resolver import TemporalAnchorResolver
 
 

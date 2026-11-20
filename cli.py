@@ -18,9 +18,7 @@ for _p in [_cur, _src]:
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from pipeline.auditor import ParallaxAuditor
-from pipeline.temporal_resolver import TemporalAnchorResolver
-from pipeline.supersession_graph import SupersessionGraph
+from pipeline.auditor import ParallaxAuditor  # noqa: E402
 
 
 def run_demo(neural: bool = False):

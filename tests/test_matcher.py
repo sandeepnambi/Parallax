@@ -1,4 +1,3 @@
-import pytest
 from pipeline.matcher import EvidenceMatcher
 
 
