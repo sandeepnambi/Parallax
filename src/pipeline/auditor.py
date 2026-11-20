@@ -4,6 +4,7 @@ Full multi-claim RAG auditing pipeline:
 Decomposition -> Evidence Sentence Matching -> Neural/Heuristic NLI -> Temporal Arbitration -> Audit Report
 """
 
+import os
 import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Union
@@ -32,8 +33,16 @@ class NeuralCrossEncoderNLI:
     id2label: Dict[Any, Any]
     device: str
 
-    def __init__(self, model_name: str = "cross-encoder/nli-distilroberta-base"):
+    def __init__(self, model_name: Optional[str] = None):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        if model_name is None:
+            finetuned_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "parallax_nli_finetuned"))
+            weights_file = os.path.join(finetuned_path, "model.safetensors")
+            if os.path.exists(weights_file):
+                model_name = finetuned_path
+            else:
+                model_name = "cross-encoder/nli-distilroberta-base"
+        self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name).to(self.device)
         self.model.eval()

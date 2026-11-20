@@ -161,25 +161,46 @@ def main():
     results["Parallax Heuristic (Temporal)"] = compute_parallax_metrics(y_true, preds_parallax_heur)
     print(f"    Completed in {time.time()-t0:.2f}s")
     
-    # Load Neural Cross-Encoder
-    print("\n>>> Loading Neural Cross-Encoder (distilroberta-base)...")
+    # 3. Zero-Shot Neural Models
+    print("\n>>> Loading Zero-Shot Neural Cross-Encoder (distilroberta-base)...")
     t0 = time.time()
-    neural_engine = NeuralCrossEncoderNLI()
+    zero_shot_engine = NeuralCrossEncoderNLI(model_name="cross-encoder/nli-distilroberta-base")
     print(f"    Model loaded in {time.time()-t0:.2f}s")
     
-    # 3. Static Neural Baseline
-    print("\n>>> 3/4 Evaluating Static Neural Baseline (Cross-Encoder, No Timestamps)...")
+    print("\n>>> 3/6 Evaluating Static Neural Baseline (Zero-Shot Cross-Encoder, No Timestamps)...")
     t0 = time.time()
-    preds_static_neural = evaluate_neural_static_batch(df, neural_engine, batch_size=args.batch_size)
-    results["Static Neural Baseline (Cross-Encoder)"] = compute_parallax_metrics(y_true, preds_static_neural)
+    preds_static_zs = evaluate_neural_static_batch(df, zero_shot_engine, batch_size=args.batch_size)
+    results["Static Neural Baseline (Zero-Shot)"] = compute_parallax_metrics(y_true, preds_static_zs)
     print(f"    Completed in {time.time()-t0:.2f}s")
     
-    # 4. Parallax Neural Verifier (Ours)
-    print("\n>>> 4/4 Evaluating Parallax Neural Two-Stage (Cross-Encoder + Temporal Arbiter)...")
+    print("\n>>> 4/6 Evaluating Parallax Neural Two-Stage (Zero-Shot Cross-Encoder + Temporal Arbiter)...")
     t0 = time.time()
-    preds_parallax_neural = evaluate_neural_parallax_batch(df, neural_engine, batch_size=args.batch_size)
-    results["Parallax Neural Verifier (Ours)"] = compute_parallax_metrics(y_true, preds_parallax_neural)
+    preds_parallax_zs = evaluate_neural_parallax_batch(df, zero_shot_engine, batch_size=args.batch_size)
+    results["Parallax Neural Verifier (Zero-Shot)"] = compute_parallax_metrics(y_true, preds_parallax_zs)
     print(f"    Completed in {time.time()-t0:.2f}s")
+
+    # 4. Fine-Tuned Neural Models (if checkpoint exists)
+    finetuned_dir = os.path.abspath(os.path.join(_root, "models", "parallax_nli_finetuned"))
+    weights_path = os.path.join(finetuned_dir, "model.safetensors")
+    if os.path.exists(weights_path):
+        print(f"\n>>> Loading Fine-Tuned Neural Cross-Encoder from {finetuned_dir}...")
+        t0 = time.time()
+        ft_engine = NeuralCrossEncoderNLI(model_name=finetuned_dir)
+        print(f"    Model loaded in {time.time()-t0:.2f}s")
+
+        print("\n>>> 5/6 Evaluating Static Neural Baseline (Fine-Tuned Cross-Encoder, No Timestamps)...")
+        t0 = time.time()
+        preds_static_ft = evaluate_neural_static_batch(df, ft_engine, batch_size=args.batch_size)
+        results["Static Neural Baseline (Fine-Tuned)"] = compute_parallax_metrics(y_true, preds_static_ft)
+        print(f"    Completed in {time.time()-t0:.2f}s")
+
+        print("\n>>> 6/6 Evaluating Parallax Neural Verifier (Fine-Tuned Cross-Encoder + Temporal Arbiter, Ours)...")
+        t0 = time.time()
+        preds_parallax_ft = evaluate_neural_parallax_batch(df, ft_engine, batch_size=args.batch_size)
+        results["Parallax Neural Verifier (Fine-Tuned, Ours)"] = compute_parallax_metrics(y_true, preds_parallax_ft)
+        print(f"    Completed in {time.time()-t0:.2f}s")
+    else:
+        print(f"\n[Notice] Fine-tuned model directory not found at {finetuned_dir}. Skipping fine-tuned evaluation.")
     
     # Print Comparison Table
     print_comparison_table(results)

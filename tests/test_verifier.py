@@ -57,3 +57,25 @@ def test_static_baseline_falsely_supports_outdated():
     verdict = static_verifier.verify_example(row)
     # The static verifier is temporally blind and must produce false support
     assert verdict == "SUPPORTED_CURRENT"
+
+
+def test_nli_dataset_mapping():
+    import pandas as pd
+    from verifier.train_cross_encoder import ParallaxNLIDataset
+
+    mock_df = pd.DataFrame({
+        "evidence_text": ["Ev1", "Ev2", "Ev3", "Ev4"],
+        "answer_claim": ["Cl1", "Cl2", "Cl3", "Cl4"],
+        "gold_label": ["SUPPORTED_CURRENT", "OUTDATED", "CONTRADICTED", "UNSUPPORTED"],
+    })
+    ds = ParallaxNLIDataset(mock_df)
+    assert len(ds) == 4
+    # SUPPORTED_CURRENT -> ENTAILMENT (1)
+    assert ds[0]["label"] == 1
+    # OUTDATED -> ENTAILMENT (1)
+    assert ds[1]["label"] == 1
+    # CONTRADICTED -> CONTRADICTION (0)
+    assert ds[2]["label"] == 0
+    # UNSUPPORTED -> NEUTRAL (2)
+    assert ds[3]["label"] == 2
+

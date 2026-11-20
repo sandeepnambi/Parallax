@@ -65,6 +65,14 @@ Datasets/D3-RAGTruth/*
 # Uncomment the line below if you want to keep reference PDFs out of git history:
 Papers/**/*.pdf
 
+# Model checkpoints & heavy weights (>100MB GitHub limit)
+*.safetensors
+*.bin
+*.pt
+models/**/*.safetensors
+models/**/*.bin
+models/**/*.pt
+
 # Temporary and local logs
 *.log
 scratch/

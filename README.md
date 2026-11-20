@@ -56,7 +56,8 @@ Parallax/
 │   │   └── auditor.py                 # End-to-End ParallaxAuditor & NeuralCrossEncoderNLI
 │   ├── verifier/
 │   │   ├── static_baseline.py         # Static NLI verifiers (Heuristic + Cross-Encoder)
-│   │   └── temporal_arbiter.py        # Two-stage temporal validity arbiter
+│   │   ├── temporal_arbiter.py        # Two-stage temporal validity arbiter
+│   │   └── train_cross_encoder.py     # Cross-encoder fine-tuning with dynamic batching & loss balancing
 │   └── evaluation/
 │       └── metrics.py                 # 4-class F1, Accuracy, FSR_outdated & LaTeX table exporter
 ├── tests/                             # Automated test suite (23 unit tests)
@@ -137,32 +138,39 @@ python cli.py audit "Who is the Master of the Horse?" \
 
 ## Reproducing All Experiments
 
-### 1. Official 800-Example Benchmark Evaluation (Phase A)
-Evaluates Static Heuristic, Static Neural, Parallax Heuristic, and Parallax Neural on `data/benchmark/test.parquet`:
+### 1. Fine-Tune the Neural Cross-Encoder
+Fine-tunes `cross-encoder/nli-distilroberta-base` on `data/benchmark/train.parquet` (1,600 examples) using dynamic sequence batching and balanced class weights:
+```bash
+python src/verifier/train_cross_encoder.py --epochs 3 --batch_size 16 --lr 2e-5
+```
+*Saves the highest validation checkpoint to `models/parallax_nli_finetuned` and outputs full evaluation report to `experiments/cross_encoder_finetune_results.json`.*
+
+### 2. Official 800-Example Benchmark Evaluation (Phase A)
+Evaluates all 6 systems (Heuristic, Zero-Shot Neural, and Fine-Tuned Neural under both Static and Parallax Temporal verification) on `data/benchmark/test.parquet`:
 ```bash
 python experiments/evaluate_full_benchmark.py --batch_size 32
 ```
 *Outputs comparative metrics and exports publication-ready LaTeX table to `experiments/table_test_results.tex`.*
 
-### 2. Staleness Duration & Domain Sensitivity (Phase B)
+### 3. Staleness Duration & Domain Sensitivity (Phase B)
 Analyzes how False-Support Rate behaves across staleness age buckets (0–30 days up to 121–153 days) and 6 knowledge domains:
 ```bash
 python experiments/analyze_temporal_sensitivity.py
 ```
 
-### 3. Multi-Claim RAG Paragraph Auditing (Phase C)
+### 4. Multi-Claim RAG Paragraph Auditing (Phase C)
 Evaluates `ParallaxAuditor` on 100 multi-claim paragraphs (250+ claims) across Pristine, Stale, Hallucinated, and Mixed archetypes:
 ```bash
 python experiments/benchmark_rag_auditor.py --n_per_archetype 25
 ```
 
-### 4. Contrastive Backbone Benchmark on VitaminC
+### 5. Contrastive Backbone Benchmark on VitaminC
 Evaluates cross-encoder contrastive sensitivity on paired factual revisions in VitaminC:
 ```bash
 python experiments/benchmark_vitaminc.py --max_cases 500 --batch_size 32
 ```
 
-### 5. Quick Diagnostic Scenario Test
+### 6. Quick Diagnostic Scenario Test
 Tests the 4 realistic RAG scenarios (Stale, Mixed, Contradicted, Pristine):
 ```bash
 # Fast heuristic mode
@@ -184,16 +192,18 @@ The benchmark tests systems on held-out records (200 records per class) with 0% 
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Existing Static Baselines (No Temporal Awareness)** | | | | | | | |
 | ✗ Static Heuristic Baseline | 68.12% | 0.596 | **92.50% (Severe Failure)** | 0.00% | 63.84% | 83.76% | 90.66% |
-| ✗ Static Neural Cross-Encoder | 40.62% | 0.354 | **51.50% (Severe Failure)** | 0.00% | 48.57% | 56.82% | 36.30% |
+| ✗ Static Neural (Zero-Shot Cross-Encoder) | 40.62% | 0.354 | **51.50% (Severe Failure)** | 0.00% | 48.57% | 56.82% | 36.30% |
+| ✗ Static Neural (Fine-Tuned Cross-Encoder) | 71.75% | 0.636 | **98.50% (The Static Paradox)** | 0.00% | 64.88% | 93.10% | 96.46% |
 | **Parallax (Our Temporal Verifier Architecture)** | | | | | | | |
-| ✓ Parallax Heuristic (Temporal) | **91.25%** | **0.913** | **0.00% (Flawless)** | **95.85%** | **95.01%** | **83.76%** | **90.66%** |
-| ✓ Parallax Neural Verifier | **53.50%** | **0.564** | **0.00% (Flawless)** | **64.78%** | **67.55%** | **56.82%** | **36.30%** |
+| ✓ Parallax Heuristic (Temporal) | 91.25% | 0.913 | **0.00% (Flawless)** | 95.85% | 95.01% | 83.76% | 90.66% |
+| ✓ Parallax Neural Verifier (Zero-Shot) | 53.50% | 0.564 | **0.00% (Flawless)** | 64.78% | 67.55% | 56.82% | 36.30% |
+| ✓ **Parallax Neural Verifier (Fine-Tuned, Ours)** | **96.38%** | **0.9639** | **0.00% (Flawless)** | **97.77%** | **98.23%** | **93.10%** | **96.46%** |
 
-> [!NOTE]
-> **Understanding the "Severe Failure" in Existing Baselines**:
-> The 51.5% to 92.5% False-Support Rate is a **failure of existing standard RAG evaluators**, not Parallax.
-> Standard NLI and faithfulness checkers evaluate only *textual entailment*. When retrieved context states *"Lord de Mauley is Master of the Horse"*, the premise strictly entails the claim. However, because that evidence was superseded in July 2024, the answer is factually false in December 2024. Static systems blindly certify these obsolete claims.
-> **Parallax completely eliminates this failure mode (0.00% FSR)** by combining deep inference with temporal validity arbitration.
+> [!IMPORTANT]
+> **The Static Entailment Paradox**:
+> Notice that when the neural cross-encoder is fine-tuned to high linguistic accuracy, the **static baseline's False-Support Rate jumps from $51.50\% \rightarrow 98.50\%$**!
+> Why? Because an accurate NLI model correctly recognizes that obsolete context strictly entails the claim (197/200 recall). Without temporal arbitration, a static RAG verifier blindly accepts all 98.5% of these outdated claims as true.
+> **Parallax solves this paradox**: pairing the exact same fine-tuned cross-encoder with Stage 2 Temporal Arbitration slashes false support to **0.00%**, boosting overall accuracy to **96.38%** and Macro-F1 to **0.9639**.
 
 ---
 

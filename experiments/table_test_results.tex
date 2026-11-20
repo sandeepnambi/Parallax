@@ -7,8 +7,10 @@
 \midrule
 Static Heuristic Baseline & 0.596 & 0.638 & 0.000 & 0.838 & 0.907 & 92.5\% \\
 Parallax Heuristic (Temporal) & 0.913 & 0.950 & 0.959 & 0.838 & 0.907 & 0.0\% \\
-Static Neural Baseline (Cross-Encoder) & 0.354 & 0.486 & 0.000 & 0.568 & 0.363 & 51.5\% \\
-Parallax Neural Verifier (Ours) & 0.564 & 0.675 & 0.648 & 0.568 & 0.363 & 0.0\% \\
+Static Neural Baseline (Zero-Shot) & 0.354 & 0.486 & 0.000 & 0.568 & 0.363 & 51.5\% \\
+Parallax Neural Verifier (Zero-Shot) & 0.564 & 0.675 & 0.648 & 0.568 & 0.363 & 0.0\% \\
+Static Neural Baseline (Fine-Tuned) & 0.636 & 0.649 & 0.000 & 0.931 & 0.965 & 98.5\% \\
+Parallax Neural Verifier (Fine-Tuned, Ours) & 0.964 & 0.982 & 0.978 & 0.931 & 0.965 & 0.0\% \\
 \bottomrule
 \end{tabular}
 \caption{Evaluation on the Parallax Benchmark (800 test examples). $\text{FSR}_{\text{OUTD}}$ measures the percentage of superseded claims falsely certified as current.}
