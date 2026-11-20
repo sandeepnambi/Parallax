@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Interactive Testing Playground</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased">
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 font-bold text-xl">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            Parallax <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">Testing Playground</span>
+          </h1>
+          <p class="text-xs text-slate-400">Auditing RAG evidence staleness: Conventional Static vs. Dynamic Parallax</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Zero Oracle Metadata
+        </span>
+        <span class="px-2.5 py-1 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20">
+          <i class="fa-solid fa-microchip mr-1"></i> Local Inference
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- Preset Test Case Selector -->
+    <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-amber-400"></i> Preloaded Test Cases
+        </h2>
+        <span class="text-xs text-slate-400">Click a case to load claim & evidence</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="example-buttons">
+        <!-- Buttons injected dynamically -->
+      </div>
+      <div id="example-description" class="mt-3 p-3 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs text-slate-300 hidden">
+        <!-- Description injected dynamically -->
+      </div>
+    </section>
+
+    <!-- Error Banner -->
+    <div id="error-banner" class="hidden p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation mt-0.5 text-rose-400"></i>
+      <div id="error-message"></div>
+    </div>
+
+    <!-- Claim & Evidence Editor Grid -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Input Form (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- Claim Input -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="claim-input" class="text-sm font-medium text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-quote-left text-indigo-400"></i> Claim Statement
+            </label>
+            <span id="claim-len" class="text-xs text-slate-500">0 chars</span>
+          </div>
+          <textarea
+            id="claim-input"
+            rows="3"
+            class="w-full bg-slate-950 border border-slate-700/80 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition"
+            placeholder="e.g. Over 600,000 copies of the series are in circulation."
+          ></textarea>
+        </div>
+
+        <!-- Evidence Passages Editor -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-medium text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-sky-400"></i> Retrieved Passages
+              </h3>
+              <p class="text-xs text-slate-400">Evidence context with doc IDs and snapshot dates</p>
+            </div>
+            <button
+              id="btn-add-passage"
+              class="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 text-xs font-medium transition flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-plus"></i> Add Passage
+            </button>
+          </div>
+
+          <div id="passages-container" class="space-y-3.5 max-h-[500px] overflow-y-auto pr-1">
+            <!-- Dynamic passage cards injected here -->
+          </div>
+        </div>
+
+        <!-- Verification Actions -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <input type="checkbox" id="neural-toggle" class="h-4 w-4 rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-indigo-500/50">
+              <span>Include Zero-Shot Neural (DistilRoBERTa)</span>
+            </label>
+            <button id="btn-clear" class="text-xs text-slate-400 hover:text-slate-200 transition">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+            </button>
+          </div>
+
+          <button
+            id="btn-verify"
+            class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <span id="btn-verify-text"><i class="fa-solid fa-play mr-1.5"></i> Run Verification</span>
+            <span id="btn-verify-spinner" class="hidden"><i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i> Verifying...</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Verification Results Dashboard (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <div id="results-empty" class="bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl p-12 text-center text-slate-500 flex flex-col items-center justify-center min-h-[400px]">
+          <div class="h-16 w-16 rounded-2xl bg-slate-800/50 flex items-center justify-center text-2xl text-slate-400 mb-4">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <h4 class="text-base font-medium text-slate-300 mb-1">No Verification Results Yet</h4>
+          <p class="text-xs text-slate-400 max-w-sm">Select one of the preloaded example cases above or enter a custom claim and retrieved passages, then click <strong>Run Verification</strong>.</p>
+        </div>
+
+        <div id="results-dashboard" class="space-y-6 hidden">
+
+          <!-- Comparative Verdict Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- Static Heuristic Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Conventional Static</span>
+                <span id="static-latency" class="text-xs text-slate-500 font-mono">0.0 ms</span>
+              </div>
+              <div class="mb-3">
+                <span id="static-badge" class="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase inline-flex items-center gap-1.5">
+                  <!-- Injected -->
+                </span>
+              </div>
+              <p id="static-explanation" class="text-xs text-slate-300 leading-relaxed min-h-[40px]">
+                <!-- Injected -->
+              </p>
+              <div class="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> Blind to temporal dates & supersession
+              </div>
+            </div>
+
+            <!-- Dynamic Parallax Card -->
+            <div class="bg-slate-900 border-2 border-indigo-500/40 rounded-2xl p-5 relative overflow-hidden shadow-md shadow-indigo-500/5">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-shield-halved"></i> Parallax Dynamic (Ours)
+                </span>
+                <span id="dynamic-latency" class="text-xs text-indigo-300 font-mono">0.0 ms</span>
+              </div>
+              <div class="mb-3">
+                <span id="dynamic-badge" class="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase inline-flex items-center gap-1.5">
+                  <!-- Injected -->
+                </span>
+              </div>
+              <p id="dynamic-explanation" class="text-xs text-slate-300 leading-relaxed min-h-[40px]">
+                <!-- Injected -->
+              </p>
+              <div class="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-indigo-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-timeline"></i> Dynamic Stage B Temporal Arbitration
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Neural Models Comparison (Optional) -->
+          <div id="neural-comparison-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hidden">
+            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-brain text-purple-400"></i> Zero-Shot Neural Comparison (DistilRoBERTa)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-medium text-slate-400">Static Neural</span>
+                  <span id="static-neural-latency" class="text-[11px] font-mono text-slate-500"></span>
+                </div>
+                <div id="static-neural-badge" class="mb-2"></div>
+                <p id="static-neural-explanation" class="text-xs text-slate-300"></p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/80 border border-purple-500/30">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-medium text-purple-300">Parallax Dynamic Neural</span>
+                  <span id="dynamic-neural-latency" class="text-[11px] font-mono text-purple-400"></span>
+                </div>
+                <div id="dynamic-neural-badge" class="mb-2"></div>
+                <p id="dynamic-neural-explanation" class="text-xs text-slate-300"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage B Temporal Supersession Trace -->
+          <div id="stage-b-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-diagram-project text-amber-400"></i> Stage B: Temporal Reasoning & Supersession Trace
+            </h3>
+            <div id="stage-b-content" class="text-xs text-slate-300 space-y-2">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Stage A Semantic Alignment Table -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-table-list text-sky-400"></i> Stage A: Passage-Level Semantic Alignment
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                    <th class="py-2 px-3">Passage ID</th>
+                    <th class="py-2 px-3">Doc ID</th>
+                    <th class="py-2 px-3">Date</th>
+                    <th class="py-2 px-3">Semantic Relation</th>
+                    <th class="py-2 px-3">Evidence Text</th>
+                  </tr>
+                </thead>
+                <tbody id="stage-a-table" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+    Parallax: Auditing Evidence Obsolescence in Mixed-Context RAG · Non-Oracle Dynamic Verification
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    let examples = [];
+    let passages = [];
+
+    // Verdict Badge Styles
+    const VERDICT_STYLES = {
+      OUTDATED: {
+        bg: 'bg-amber-500/15',
+        text: 'text-amber-400',
+        border: 'border-amber-500/30',
+        icon: 'fa-solid fa-triangle-exclamation',
+        label: 'OUTDATED (Superseded)'
+      },
+      SUPPORTED_CURRENT: {
+        bg: 'bg-emerald-500/15',
+        text: 'text-emerald-400',
+        border: 'border-emerald-500/30',
+        icon: 'fa-solid fa-check-circle',
+        label: 'SUPPORTED_CURRENT'
+      },
+      CONTRADICTED: {
+        bg: 'bg-rose-500/15',
+        text: 'text-rose-400',
+        border: 'border-rose-500/30',
+        icon: 'fa-solid fa-circle-xmark',
+        label: 'CONTRADICTED'
+      },
+      UNSUPPORTED: {
+        bg: 'bg-slate-700/30',
+        text: 'text-slate-400',
+        border: 'border-slate-600/30',
+        icon: 'fa-solid fa-question-circle',
+        label: 'UNSUPPORTED'
+      }
+    };
+
+    const RELATION_STYLES = {
+      ENTAILMENT: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+      CONTRADICTION: 'bg-rose-500/15 text-rose-400 border border-rose-500/30',
+      NEUTRAL: 'bg-slate-700/30 text-slate-400 border border-slate-600/30'
+    };
+
+    function renderBadge(verdict) {
+      const s = VERDICT_STYLES[verdict] || VERDICT_STYLES.UNSUPPORTED;
+      return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${s.bg} ${s.text} border ${s.border} inline-flex items-center gap-1.5">
+        <i class="${s.icon}"></i> ${s.label}
+      </span>`;
+    }
+
+    // Initialize application
+    async function init() {
+      // Fetch preloaded examples
+      try {
+        const res = await fetch('/api/examples');
+        const data = await res.json();
+        examples = data.examples || [];
+        renderExampleButtons();
+        // Load first example by default
+        if (examples.length > 0) {
+          loadExample(examples[0].id);
+        }
+      } catch (err) {
+        showError('Failed to load preloaded test cases: ' + err.message);
+      }
+
+      // Event listeners
+      document.getElementById('claim-input').addEventListener('input', (e) => {
+        document.getElementById('claim-len').textContent = `${e.target.value.length} chars`;
+      });
+      document.getElementById('btn-add-passage').addEventListener('click', () => {
+        addPassageCard('', '', '');
+      });
+      document.getElementById('btn-clear').addEventListener('click', clearAll);
+      document.getElementById('btn-verify').addEventListener('click', runVerification);
+    }
+
+    function renderExampleButtons() {
+      const container = document.getElementById('example-buttons');
+      container.innerHTML = '';
+      examples.forEach((ex, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'p-2.5 rounded-xl text-left transition border bg-slate-950/60 hover:bg-slate-800/70 border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300';
+        btn.innerHTML = `<div class="font-semibold text-slate-100 flex items-center gap-1.5 truncate">
+          <span class="h-1.5 w-1.5 rounded-full ${idx === 0 ? 'bg-amber-400' : 'bg-indigo-400'}"></span>
+          ${ex.title.replace(/^\d+\.\s*/, '')}
+        </div>`;
+        btn.onclick = () => loadExample(ex.id);
+        container.appendChild(btn);
+      });
+    }
+
+    function loadExample(id) {
+      clearError();
+      const ex = examples.find(e => e.id === id);
+      if (!ex) return;
+
+      document.getElementById('claim-input').value = ex.claim;
+      document.getElementById('claim-len').textContent = `${ex.claim.length} chars`;
+
+      const descBox = document.getElementById('example-description');
+      descBox.innerHTML = `<strong>${ex.title}:</strong> ${ex.description}`;
+      descBox.classList.remove('hidden');
+
+      passages = JSON.parse(JSON.stringify(ex.retrieved_passages));
+      renderPassageCards();
+    }
+
+    function clearAll() {
+      clearError();
+      document.getElementById('claim-input').value = '';
+      document.getElementById('claim-len').textContent = '0 chars';
+      document.getElementById('example-description').classList.add('hidden');
+      passages = [];
+      renderPassageCards();
+      document.getElementById('results-dashboard').classList.add('hidden');
+      document.getElementById('results-empty').classList.remove('hidden');
+    }
+
+    function addPassageCard(docId = '', snapshotDate = '', text = '') {
+      clearError();
+      const pid = `p_${passages.length}`;
+      passages.push({
+        passage_id: pid,
+        doc_id: docId || '74897662',
+        snapshot_date: snapshotDate || '2024-11-01',
+        text: text || ''
+      });
+      renderPassageCards();
+    }
+
+    function removePassage(index) {
+      clearError();
+      passages.splice(index, 1);
+      renderPassageCards();
+    }
+
+    function renderPassageCards() {
+      const container = document.getElementById('passages-container');
+      container.innerHTML = '';
+
+      if (passages.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
+          No passages in context. Click "+ Add Passage" to add evidence.
+        </div>`;
+        return;
+      }
+
+      passages.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2.5 relative group';
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-mono text-slate-400 font-semibold">Passage #${idx + 1} (${p.passage_id || 'p_' + idx})</span>
+            <button
+              class="text-xs text-slate-500 hover:text-rose-400 transition"
+              title="Remove passage"
+              onclick="removePassage(${idx})"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Doc ID</label>
+              <input
+                type="text"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-indigo-500 focus:outline-none"
+                value="${p.doc_id}"
+                placeholder="e.g. 74897662"
+                onchange="passages[${idx}].doc_id = this.value"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Snapshot Date</label>
+              <input
+                type="text"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-indigo-500 focus:outline-none"
+                value="${p.snapshot_date}"
+                placeholder="YYYY-MM-DD"
+                onchange="passages[${idx}].snapshot_date = this.value"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Evidence Text</label>
+            <textarea
+              rows="2"
+              class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600 focus:border-indigo-500 focus:outline-none"
+              placeholder="Paste evidence text..."
+              onchange="passages[${idx}].text = this.value"
+            >${p.text}</textarea>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showError(msg) {
+      const banner = document.getElementById('error-banner');
+      const text = document.getElementById('error-message');
+      text.textContent = msg;
+      banner.classList.remove('hidden');
+    }
+
+    function clearError() {
+      document.getElementById('error-banner').classList.add('hidden');
+    }
+
+    async function runVerification() {
+      clearError();
+      const claim = document.getElementById('claim-input').value.trim();
+      if (!claim) {
+        showError('Please enter a claim statement to verify.');
+        return;
+      }
+
+      // Gather current values from inputs in case onchange hasn't fired
+      const container = document.getElementById('passages-container');
+      const cards = container.children;
+      for (let i = 0; i < passages.length; i++) {
+        const inputs = cards[i].querySelectorAll('input');
+        const textarea = cards[i].querySelector('textarea');
+        if (inputs.length >= 2 && textarea) {
+          passages[i].doc_id = inputs[0].value.trim();
+          passages[i].snapshot_date = inputs[1].value.trim();
+          passages[i].text = textarea.value.trim();
+        }
+      }
+
+      const includeNeural = document.getElementById('neural-toggle').checked;
+      const btn = document.getElementById('btn-verify');
+      const btnText = document.getElementById('btn-verify-text');
+      const btnSpinner = document.getElementById('btn-verify-spinner');
+
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            claim: claim,
+            retrieved_passages: passages,
+            include_neural: includeNeural
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.detail || `Server returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+        displayResults(data);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnSpinner.classList.add('hidden');
+      }
+    }
+
+    function displayResults(data) {
+      document.getElementById('results-empty').classList.add('hidden');
+      const dashboard = document.getElementById('results-dashboard');
+      dashboard.classList.remove('hidden');
+
+      const r = data.results;
+      const staticH = r.static_heuristic;
+      const dynamicH = r.dynamic_heuristic;
+
+      // Static Card
+      document.getElementById('static-latency').textContent = `${staticH.inference_time_ms} ms`;
+      document.getElementById('static-badge').innerHTML = renderBadge(staticH.verdict);
+      document.getElementById('static-explanation').textContent = staticH.explanation;
+
+      // Dynamic Card
+      document.getElementById('dynamic-latency').textContent = `${dynamicH.inference_time_ms} ms`;
+      document.getElementById('dynamic-badge').innerHTML = renderBadge(dynamicH.verdict);
+      document.getElementById('dynamic-explanation').textContent = dynamicH.explanation;
+
+      // Neural Card (if included)
+      const neuralCard = document.getElementById('neural-comparison-card');
+      if (r.static_neural && r.dynamic_neural) {
+        neuralCard.classList.remove('hidden');
+        document.getElementById('static-neural-latency').textContent = `${r.static_neural.inference_time_ms} ms`;
+        document.getElementById('static-neural-badge').innerHTML = renderBadge(r.static_neural.verdict);
+        document.getElementById('static-neural-explanation').textContent = r.static_neural.explanation;
+
+        document.getElementById('dynamic-neural-latency').textContent = `${r.dynamic_neural.inference_time_ms} ms`;
+        document.getElementById('dynamic-neural-badge').innerHTML = renderBadge(r.dynamic_neural.verdict);
+        document.getElementById('dynamic-neural-explanation').textContent = r.dynamic_neural.explanation;
+      } else {
+        neuralCard.classList.add('hidden');
+      }
+
+      // Stage B Temporal Trace
+      const stageB = document.getElementById('stage-b-content');
+      if (dynamicH.verdict === 'OUTDATED' && dynamicH.superseding_passage) {
+        const supp = dynamicH.supporting_passages[0] || {};
+        const supe = dynamicH.superseding_passage || {};
+        stageB.innerHTML = `
+          <div class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300">
+            <div class="font-semibold mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-clock-rotate-left"></i> Supersession Detected!
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 font-mono text-[11px]">
+              <div class="p-2 rounded bg-slate-950/80 border border-amber-500/20">
+                <span class="text-slate-400 block text-[10px]">OLD REVISION (${supp.snapshot_date}) [${supp.passage_id}]</span>
+                <span class="text-slate-200">"${supp.text || ''}"</span>
+              </div>
+              <div class="p-2 rounded bg-slate-950/80 border border-amber-500/40">
+                <span class="text-amber-400 block text-[10px]">NEWER REVISION (${supe.snapshot_date}) [${supe.passage_id}]</span>
+                <span class="text-amber-200">"${supe.text || ''}"</span>
+              </div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-300">
+              The claim is factually grounded in the older snapshot, but the newer snapshot of document <span class="font-mono text-indigo-300">${supe.doc_id}</span> supersedes it.
+            </div>
+          </div>
+        `;
+      } else if (dynamicH.verdict === 'SUPPORTED_CURRENT') {
+        stageB.innerHTML = `
+          <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+            <div class="font-semibold mb-1"><i class="fa-solid fa-check"></i> Actively Supported</div>
+            <div class="text-[11px] text-slate-300">The claim is entailed by retrieved evidence, and no conflicting subsequent revisions of the document exist in context.</div>
+          </div>
+        `;
+      } else if (dynamicH.verdict === 'CONTRADICTED') {
+        stageB.innerHTML = `
+          <div class="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300">
+            <div class="font-semibold mb-1"><i class="fa-solid fa-xmark"></i> Direct Contradiction</div>
+            <div class="text-[11px] text-slate-300">The claim is directly refuted by retrieved evidence across all observed snapshot dates.</div>
+          </div>
+        `;
+      } else {
+        stageB.innerHTML = `
+          <div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-400">
+            <div class="font-semibold mb-1"><i class="fa-solid fa-question"></i> Unsupported / Unretrieved</div>
+            <div class="text-[11px] text-slate-400">Context does not contain document revisions entailing or contradicting this claim.</div>
+          </div>
+        `;
+      }
+
+      // Stage A Table
+      const table = document.getElementById('stage-a-table');
+      table.innerHTML = '';
+      const stageA = dynamicH.stage_a_results || [];
+
+      stageA.forEach(item => {
+        const rel = item.relation || 'NEUTRAL';
+        const relBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold ${RELATION_STYLES[rel] || RELATION_STYLES.NEUTRAL}">${rel}</span>`;
+        const matchedPassage = passages.find(p => p.passage_id === item.passage_id) || {};
+        const textSnippet = (matchedPassage.text || '').slice(0, 75) + ((matchedPassage.text || '').length > 75 ? '...' : '');
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-300">${item.passage_id}</td>
+          <td class="py-2.5 px-3 text-slate-400">${item.doc_id || matchedPassage.doc_id || '-'}</td>
+          <td class="py-2.5 px-3 text-slate-400">${item.snapshot_date || matchedPassage.snapshot_date || '-'}</td>
+          <td class="py-2.5 px-3">${relBadge}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-sans text-xs">${textSnippet}</td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
