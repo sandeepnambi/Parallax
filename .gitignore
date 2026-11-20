@@ -76,4 +76,5 @@ models/**/*.pt
 # Temporary and local logs & generated reports
 *.log
 *.html
+!src/playground/static/*.html
 scratch/
