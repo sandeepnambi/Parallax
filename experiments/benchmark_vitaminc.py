@@ -130,9 +130,12 @@ def evaluate_neural_cross_encoder(
     """Runs batched inference with CrossEncoder NLI."""
     print(f"Loading Neural Cross-Encoder: {model_name}...")
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
+    tokenizer: Any = AutoTokenizer.from_pretrained(model_name)
+    model: Any = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
     model.eval()
+    
+    if tokenizer is None or model is None:
+        raise RuntimeError("Failed to load tokenizer or model")
     
     id2label = {int(k): str(v).upper() for k, v in model.config.id2label.items()}
     print(f"Model id2label mapping: {id2label} (device: {device})")
@@ -140,13 +143,14 @@ def evaluate_neural_cross_encoder(
     preds: List[str] = []
     total = len(samples)
     t0 = time.time()
+    tok: Any = tokenizer
     
     for i in range(0, total, batch_size):
         batch = samples[i:i + batch_size]
-        premises = [b.get("evidence", "") for b in batch]
-        hypotheses = [b.get("claim", "") for b in batch]
+        premises = [str(b.get("evidence") or "") for b in batch]
+        hypotheses = [str(b.get("claim") or "") for b in batch]
         
-        inputs = tokenizer(
+        inputs = tok(
             premises, hypotheses,
             padding=True, truncation=True, max_length=256,
             return_tensors="pt"
