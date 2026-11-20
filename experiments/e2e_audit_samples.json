@@ -47,8 +47,8 @@
     "claim_breakdown": {
       "SUPPORTED_CURRENT": 1,
       "OUTDATED": 1,
-      "CONTRADICTED": 1,
-      "UNSUPPORTED": 0
+      "CONTRADICTED": 0,
+      "UNSUPPORTED": 1
     },
     "claim_audits": [
       {
@@ -76,13 +76,13 @@
       {
         "claim_index": 3,
         "claim_text": "Jerrick Harding was selected as the European MVP in 2023.",
-        "verdict": "CONTRADICTED",
+        "verdict": "UNSUPPORTED",
         "evidence_matched": "Jerrick Harding (born April 13, 1998) is an American professional basketball player for MoraBanc Andorra of the Liga ACB.",
         "evidence_source": "Jerrick Harding (id: 581293)",
         "match_score": 0.2889,
         "temporal_anchor": "HISTORICAL",
-        "temporal_status": "CONFLICTING (evidence valid 2024-07-01 to present)",
-        "explanation": "Evidence directly refutes or contradicts the claim."
+        "temporal_status": "INSUFFICIENT",
+        "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
       }
     ]
   },

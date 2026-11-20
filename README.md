@@ -227,9 +227,9 @@ When auditing full multi-claim RAG paragraphs (Pristine, Stale, Hallucinated, an
 
 | RAG Auditor Configuration | Overall Paragraph Accuracy | False Trust Rate (FTR $\downarrow$) | Pristine Trust Score | Stale Trust Score | Mixed Trust Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Static Baseline RAG Auditor** | 40.00% | 17.33% *(Dangerous)* | 80.0% | **72.0%** *(Overconfident)* | **49.3%** *(Overconfident)* |
-| **Parallax Heuristic Auditor** | **70.00%** | **0.00% (Safe)** | 80.0% | **36.0%** *(Penalized)* | **22.6%** *(Penalized)* |
-| **Parallax Neural Auditor (Ours)** | **65.00%** | **0.00% (Safe)** | 80.0% | **38.0%** *(Penalized)* | **25.3%** *(Penalized)* |
+| **Static Baseline RAG Auditor** | 38.00% | 16.00% *(Dangerous)* | 74.0% | **72.0%** *(Overconfident)* | **48.0%** *(Overconfident)* |
+| **Parallax Heuristic Auditor** | 64.00% | **2.67% (Safe)** | 74.0% | **40.0%** *(Penalized)* | **25.3%** *(Penalized)* |
+| **Parallax Neural Auditor (Fine-Tuned, Ours)** | **90.00%** | **4.00% (Safe)** | **96.0%** | **54.0%** *(Penalized)* | **34.6%** *(Penalized)* |
 
 ---
 

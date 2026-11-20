@@ -24,15 +24,15 @@
     }
   },
   "Parallax Neural Auditor (Ours)": {
-    "paragraph_accuracy": 0.61,
-    "false_trust_rate": 0.0133,
-    "false_trust_count": 1,
+    "paragraph_accuracy": 0.9,
+    "false_trust_rate": 0.04,
+    "false_trust_count": 3,
     "non_pristine_total": 75,
     "avg_trust_score_by_archetype": {
-      "PRISTINE_CURRENT": 0.8,
-      "DEGRADED_STALE": 0.4,
+      "PRISTINE_CURRENT": 0.96,
+      "DEGRADED_STALE": 0.54,
       "HALLUCINATED": 0.5,
-      "MIXED_STALE_HALLUCINATED": 0.293
+      "MIXED_STALE_HALLUCINATED": 0.346
     }
   },
   "sample_audit_traces": [
@@ -40,9 +40,9 @@
       "scenario_id": "SCENARIO_PRISTINE_001",
       "archetype": "PRISTINE_CURRENT",
       "gold_status": "TRUSTWORTHY_CURRENT",
-      "predicted_status": "HALLUCINATED_RESPONSE",
-      "is_correct": false,
-      "trust_score": 0.5,
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
       "claim_audits": [
         {
           "claim_index": 1,
@@ -58,13 +58,13 @@
         {
           "claim_index": 2,
           "claim_text": "Ron Holland's average points per game in the 29 games played for the NBA G League Ignite were 18.5 points.",
-          "verdict": "UNSUPPORTED",
+          "verdict": "SUPPORTED_CURRENT",
           "evidence_matched": "Additional context: Holland averaged 18.5 points, 6.7 rebounds, 2.8 assists, and 2.1 steals per game in 29 games played.",
           "evidence_source": "Ron Holland (basketball) (id: 73048713) (id: doc_pristine_0_2)",
           "match_score": 0.4801,
           "temporal_anchor": "HISTORICAL",
-          "temporal_status": "INSUFFICIENT",
-          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
       ]
     },
@@ -136,20 +136,20 @@
       "scenario_id": "SCENARIO_PRISTINE_004",
       "archetype": "PRISTINE_CURRENT",
       "gold_status": "TRUSTWORTHY_CURRENT",
-      "predicted_status": "HALLUCINATED_RESPONSE",
-      "is_correct": false,
-      "trust_score": 0.5,
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
       "claim_audits": [
         {
           "claim_index": 1,
           "claim_text": "The MP elected for the Araria Lok Sabha constituency is Shri Shahnawaz Alam, RJD.",
-          "verdict": "UNSUPPORTED",
+          "verdict": "SUPPORTED_CURRENT",
           "evidence_matched": "Context regarding query: Shri shahnawaz alam, Rjd is the MP elected in the 2024 Indian general election.",
           "evidence_source": "Araria (id: 1702687) (id: doc_pristine_3_1)",
           "match_score": 0.5706,
           "temporal_anchor": "IMPLICIT_PRESENT",
-          "temporal_status": "INSUFFICIENT",
-          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
         {
           "claim_index": 2,
@@ -168,20 +168,20 @@
       "scenario_id": "SCENARIO_PRISTINE_005",
       "archetype": "PRISTINE_CURRENT",
       "gold_status": "TRUSTWORTHY_CURRENT",
-      "predicted_status": "HALLUCINATED_RESPONSE",
-      "is_correct": false,
-      "trust_score": 0.5,
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
       "claim_audits": [
         {
           "claim_index": 1,
           "claim_text": "Based on the provided records, The director of communications to the prime minister of the United Kingdom is Matthew Doyle.",
-          "verdict": "UNSUPPORTED",
+          "verdict": "SUPPORTED_CURRENT",
           "evidence_matched": "Context regarding query: The director of communications to the prime minister of the United Kingdom is Matthew Doyle.",
           "evidence_source": "Director of communications (id: 2469264) (id: doc_pristine_4_1)",
           "match_score": 0.7029,
           "temporal_anchor": "IMPLICIT_PRESENT",
-          "temporal_status": "INSUFFICIENT",
-          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
         {
           "claim_index": 2,
@@ -264,9 +264,9 @@
       "scenario_id": "SCENARIO_PRISTINE_008",
       "archetype": "PRISTINE_CURRENT",
       "gold_status": "TRUSTWORTHY_CURRENT",
-      "predicted_status": "HALLUCINATED_RESPONSE",
-      "is_correct": false,
-      "trust_score": 0.5,
+      "predicted_status": "TRUSTWORTHY_CURRENT",
+      "is_correct": true,
+      "trust_score": 1.0,
       "claim_audits": [
         {
           "claim_index": 1,
@@ -282,13 +282,13 @@
         {
           "claim_index": 2,
           "claim_text": "Moreover, There were 200 men in each of the five \"centuriae\" of the first cohort.",
-          "verdict": "UNSUPPORTED",
+          "verdict": "SUPPORTED_CURRENT",
           "evidence_matched": "Additional context: Each of its five \"centuriae\" was a double centuria of 200 men (rather than 100).",
           "evidence_source": "Centuria (id: 1880720) (id: doc_pristine_7_2)",
           "match_score": 0.4403,
           "temporal_anchor": "HISTORICAL",
-          "temporal_status": "INSUFFICIENT",
-          "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
+          "temporal_status": "ACTIVE / VALID",
+          "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
       ]
     },
