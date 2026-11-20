@@ -1,313 +1,360 @@
-# Parallax: Claim-Level Superseded-Evidence Detection in RAG
+# Parallax
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
-[![Tests: 23 passed](https://img.shields.io/badge/tests-23%20passed-success.svg)](tests/)
-[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+### Claim-Level Superseded-Evidence Detection for RAG
 
-**Parallax** investigates and solves a critical temporal blind spot in Retrieval-Augmented Generation (RAG): **an answer claim can be strictly entailed by retrieved context passages and still be factually incorrect because that evidence has since been superseded.**
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)](setup.py)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
+[![Tests](https://img.shields.io/badge/Tests-pytest-orange.svg)](tests/)
+[![Framework: FastAPI](https://img.shields.io/badge/Framework-FastAPI-009688.svg)](src/playground/app.py)
 
----
+**Parallax** detects when a RAG response cites evidence that is semantically entailed by retrieved passages—but temporally obsolete. Static fact verifiers see only whether a claim follows from evidence; Parallax also asks whether that evidence was active at the reference time.
 
-## Key Highlights
+The project provides:
 
-- **2,800-Example Scaled Benchmark**: Cleaned and balanced across 4 classes (`SUPPORTED_CURRENT`, `OUTDATED`, `CONTRADICTED`, `UNSUPPORTED`) derived from temporal Wikipedia revisions, with 0% document overlap between train, dev, and test splits.
-- **End-to-End Multi-Claim Auditor**: Combines syntactic claim decomposition, sentence-level context matching, cross-encoder natural language inference, temporal phrasing resolution, and provenance graph arbitration.
-- **Elimination of the Static Blind Spot**: Existing static RAG verifiers suffer a **51.5% to 92.5% False-Support Rate (Severe Failure)** because they confuse semantic entailment with temporal freshness. Parallax completely eliminates false support (**0.00% FSR**) while delivering **100.00% precision on active information**.
-- **Interactive CLI & HTML Audits**: Inspect datasets, run live demos, and audit RAG answers with rich interactive HTML reports and structured JSON exports.
-
----
-
-## Taxonomy of Claims
-
-| Label | Definition | Verification Condition |
-| :--- | :--- | :--- |
-| `SUPPORTED_CURRENT` | Claim is entailed by retrieved evidence that is **currently active** at reference time $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` > `t_ref` ∨ `present`) |
-| `OUTDATED` | Claim is entailed by retrieved evidence, but that evidence was **superseded or expired** prior to $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` ≤ `t_ref` ∨ `superseded_by` ≤ `t_ref`) |
-| `CONTRADICTED` | Claim directly conflicts with or is refuted by retrieved evidence. | `Refutes(E, C)` |
-| `UNSUPPORTED` | Retrieved passages contain insufficient facts to substantiate the claim. | `Neutral(E, C)` |
+- a balanced **2,800-example benchmark** across four claim labels;
+- a modular **claim-decomposition and temporal-arbitration pipeline**;
+- heuristic and neural NLI verification modes;
+- CLI and Python APIs for claim-level audits;
+- an interactive FastAPI playground for static-versus-dynamic comparisons; and
+- experimental scripts, stored results, and publication tables.
 
 ---
 
-## Repository Structure
+## Why Parallax?
+
+A response may say: `The current Master of the Horse is Lord de Mauley.`
+
+If the only retrieved evidence stated that fact in 2024-06, while that role changed by 2024-07, static entailment will often accept the claim. The evidence supports the claim historically, but not at the later reference time.
+
+Parallax separates two questions:
+
+| Stage | Question | Implemented by |
+|---|---|---|
+| **1. Linguistic NLI** | Does the evidence entail, contradict, or remain neutral toward the claim? | `HeuristicNLI`, DistilRoBERTa cross-encoder |
+| **2. Temporal arbitration** | Was the entailing evidence active at the chosen reference time? | `TemporalAnchorResolver`, `TemporalArbiter` |
+
+The result is one of four labels:
+
+| Label | Meaning |
+|---|---|
+| `SUPPORTED_CURRENT` | Evidence entails the claim and is active at reference time |
+| `OUTDATED` | Evidence entails the claim but was superseded or expired before reference time |
+| `CONTRADICTED` | Retrieved evidence directly conflicts with the claim |
+| `UNSUPPORTED` | Evidence is insufficient or neutral toward the claim |
+
+---
+
+## Repository Map
 
 ```text
 Parallax/
-├── cli.py                             # Interactive CLI: demo, info, and end-to-end auditing
-├── requirements.txt                   # Standardized dependencies (PyTorch, Transformers, Pytest, Ruff)
-├── setup.py                           # Editable package setup
-├── data/
-│   ├── benchmark/
-│   │   ├── train.parquet / .csv       # 1,600 training records (400 per class)
-│   │   ├── dev.parquet / .csv         #   400 validation records (100 per class)
-│   │   ├── test.parquet / .csv        #   800 official test records (200 per class)
-│   │   └── full_benchmark.parquet     # 2,800 complete balanced benchmark
-│   └── review/
-│       └── sample_audit_100.csv       # 100-sample human inspection audit
+├── cli.py                         # Demo, benchmark-info, and custom audit commands
+├── setup.py                       # Package metadata and core/neural/test dependencies
+├── requirements.txt               # Full runtime dependencies
 ├── src/
-│   ├── benchmark_cleaner_scaler.py    # Raw data cleaning, verbalization & split scaling
-│   ├── dataset_builder.py             # Benchmark builder and temporal metadata extractor
-│   ├── verbalizer.py                  # Syntactic QA-to-declarative claim converter
 │   ├── pipeline/
-│   │   ├── decomposer.py              # Sentence splitting, casing preservation & temporal cues
-│   │   ├── matcher.py                 # Lexical + salient entity overlap ranking
-│   │   ├── temporal_resolver.py       # Present-tense vs historical claim phrasing resolver
-│   │   ├── supersession_graph.py      # Fact revision lineage DAG & successor tracking
-│   │   └── auditor.py                 # End-to-End ParallaxAuditor & NeuralCrossEncoderNLI
+│   │   ├── decomposer.py          # Paragraph-to-atomic-claim splitting
+│   │   ├── matcher.py             # Claim-to-evidence sentence alignment
+│   │   ├── temporal_resolver.py   # Claim anchors and evidence validity arbitration
+│   │   ├── supersession_graph.py  # Entity-level revision lineage
+│   │   └── auditor.py             # End-to-end RAG audit orchestration and report export
 │   ├── verifier/
-│   │   ├── static_baseline.py         # Static NLI verifiers (Heuristic + Cross-Encoder)
-│   │   ├── temporal_arbiter.py        # Two-stage temporal validity arbiter
-│   │   └── train_cross_encoder.py     # Cross-encoder fine-tuning with dynamic batching & loss balancing
-│   └── evaluation/
-│       └── metrics.py                 # 4-class F1, Accuracy, FSR_outdated & LaTeX table exporter
-├── tests/                             # Automated test suite (23 unit tests)
-│   ├── test_decomposer.py             # Sentence splitting, filtering, and cue extraction
-│   ├── test_matcher.py                # Lexical and entity-based context alignment
-│   ├── test_temporal_resolver.py      # Historical vs present anchor classification
-│   ├── test_supersession_graph.py     # DAG revision chains and successor lookup
-│   ├── test_verbalizer.py             # Question-answer to declarative claim conversion
-│   ├── test_verifier.py               # Static vs temporal verification logic
-│   └── test_metrics.py                # Evaluation metric computations
-└── experiments/
-    ├── evaluate_full_benchmark.py     # Official 800-example Phase A test benchmark runner
-    ├── analyze_temporal_sensitivity.py# Phase B staleness elapsed & domain breakdown
-    ├── benchmark_rag_auditor.py       # Phase C 100-scenario multi-claim paragraph audit
-    ├── benchmark_vitaminc.py          # Contrastive backbone evaluation on VitaminC
-    ├── test_e2e_auditor.py            # Diagnostic script testing 4 RAG scenarios
-    └── benchmark_test_results.json    # Saved experimental results
+│   │   ├── static_baseline.py     # Static heuristic and cross-encoder baselines
+│   │   ├── temporal_arbiter.py    # Two-stage benchmark verifier
+│   │   ├── dynamic_arbiter.py     # Context/revision-aware playground verifier
+│   │   └── train_cross_encoder.py # Cross-encoder fine-tuning entry point
+│   ├── evaluation/
+│   │   ├── metrics.py             # Accuracy, macro-F1, FSR, and LaTeX exports
+│   │   └── bootstrap.py           # Uncertainty estimation utilities
+│   └── playground/
+│       ├── app.py                 # FastAPI static/dynamic comparison backend
+│       └── static/index.html      # Browser interface
+├── data/
+│   ├── benchmark/                 # Train/dev/test/full-benchmark CSV and Parquet files
+│   ├── benchmark_v2/              # Additional benchmark-v2 artifacts
+│   ├── pilot/                     # Pilot data
+│   └── review/                    # Human-review samples
+├── models/
+│   └── parallax_nli_finetuned/    # Optional local fine-tuned model artifacts
+├── experiments/                   # Reproducible benchmark and sensitivity scripts/results
+├── tests/                         # Automated decomposition, matching, verifier, metric, and API tests
+├── Datasets/                      # HoH, VitaminC, and RAGTruth source dataset areas
+├── Analysis/                      # Dataset and literature-analysis documentation
+└── paper/                         # Research draft and generated LaTeX tables
 ```
 
----
-
-## Installation & Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/sandeepnambi/Parallax.git
-   cd Parallax
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Install Parallax in editable mode**:
-   ```bash
-   pip install -e .
-   ```
-
-4. **Run Automated Unit Tests**:
-   Verify the full test suite (23 tests covering decomposer, matcher, verifier, graph, and resolver):
-   ```bash
-   python -m pytest tests/
-   ```
-
-5. **Linting Check**:
-   ```bash
-   ruff check .
-   ```
+> Parallax is a research codebase. The implementation combines benchmark construction, auditing, model training, and an interactive demo rather than exposing one single minimal library entry point.
 
 ---
 
-## Command-Line Interface (CLI)
+## Installation
 
-Parallax includes a full-featured CLI (`cli.py`) for inspecting benchmark splits, running live demonstrations, and auditing custom queries.
+### Requirements
 
-### 1. View Benchmark & Environment Info
+- Python **3.9+**
+- pip
+- Optional: PyTorch-compatible environment for neural verification
+
+### Core setup
+
 ```bash
-python cli.py info
+git clone https://github.com/sandeepnambi/Parallax.git
+cd Parallax
+python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
-*Displays dataset record counts per class, split distributions, device info, and cached model checkpoints.*
 
-### 2. Run Interactive Auditor Demo
+### Neural setup
+
+```bash
+python -m pip install -e ".[neural]"
+```
+
+The neural mode can use:
+
+- a local fine-tuned model under `models/parallax_nli_finetuned/` when `model.safetensors` is available, or
+- the Hugging Face checkpoint `cross-encoder/nli-distilroberta-base` as a fallback.
+
+No environment variable is required for the included CLI or heuristic mode.
+
+---
+
+## Quick Start
+
+### Run the interactive CLI demo
+
 ```bash
 python cli.py demo
 ```
-*Runs an interactive walkthrough demonstrating how Parallax detects outdated facts, contradicted claims, and pristine evidence in RAG responses.*
 
-### 3. Audit a RAG Response via CLI
+Use neural NLI when the required PyTorch and Transformers packages are available:
+
 ```bash
-python cli.py audit "Who is the Master of the Horse?" \
-  "Based on retrieved context, the Master of the Horse is Lord de Mauley." \
+python cli.py demo --neural
+```
+
+### Inspect benchmark data
+
+```bash
+python cli.py info
+```
+
+### Audit a custom claim
+
+```bash
+python cli.py audit \
+  --query "Who is the Master of the Horse?" \
+  --answer "Based on retrieved context, the Master of the Horse is Lord de Mauley." \
+  --doc-text "The current Master of the Horse is Lord de Mauley." \
+  --valid-from 2024-06-01 \
+  --valid-to 2024-07-01 \
+  --superseded-by 2024-07-01 \
+  --ref-time 2024-12-01 \
+  --output-json audit_report.json
+```
+
+Export a standalone HTML report instead:
+
+```bash
+python cli.py audit \
+  --query "Who is the Master of the Horse?" \
+  --answer "The Master of the Horse is Lord de Mauley." \
+  --docs-file retrieved_docs.json \
   --ref-time 2024-12-01 \
   --output-html audit_report.html
 ```
 
----
+The JSON documents file should contain a list of objects such as:
 
-## Reproducing All Experiments
-
-### 1. Fine-Tune the Neural Cross-Encoder
-Fine-tunes `cross-encoder/nli-distilroberta-base` on `data/benchmark/train.parquet` (1,600 examples) using dynamic sequence batching and balanced class weights:
-```bash
-python src/verifier/train_cross_encoder.py --epochs 3 --batch_size 16 --lr 2e-5
-```
-*Saves the highest validation checkpoint to `models/parallax_nli_finetuned` and outputs full evaluation report to `experiments/cross_encoder_finetune_results.json`.*
-
-### 2. Official 800-Example Benchmark Evaluation (Phase A)
-Evaluates all 6 systems (Heuristic, Zero-Shot Neural, and Fine-Tuned Neural under both Static and Parallax Temporal verification) on `data/benchmark/test.parquet`:
-```bash
-python experiments/evaluate_full_benchmark.py --batch_size 32
-```
-*Outputs comparative metrics and exports publication-ready LaTeX table to `experiments/table_test_results.tex`.*
-
-### 3. Staleness Duration & Domain Sensitivity (Phase B)
-Analyzes how False-Support Rate behaves across staleness age buckets (0–30 days up to 121–153 days) and 6 knowledge domains:
-```bash
-python experiments/analyze_temporal_sensitivity.py
+```json
+[
+  {
+    "doc_id": "100025",
+    "doc_title": "Master of the Horse",
+    "text": "The current Master of the Horse is Lord de Mauley.",
+    "valid_from": "2024-06-01",
+    "valid_to": "2024-07-01",
+    "superseded_by": "2024-07-01"
+  }
+]
 ```
 
-### 4. Multi-Claim RAG Paragraph Auditing (Phase C)
-Evaluates `ParallaxAuditor` on 100 multi-claim paragraphs (250+ claims) across Pristine, Stale, Hallucinated, and Mixed archetypes:
+### Run tests
+
 ```bash
-python experiments/benchmark_rag_auditor.py --n_per_archetype 25
+python -m pytest tests/
 ```
 
-### 5. Contrastive Backbone Benchmark on VitaminC
-Evaluates cross-encoder contrastive sensitivity on paired factual revisions in VitaminC:
-```bash
-python experiments/benchmark_vitaminc.py --max_cases 500 --batch_size 32
-```
-
-### 6. Quick Diagnostic Scenario Test
-Tests the 4 realistic RAG scenarios (Stale, Mixed, Contradicted, Pristine):
-```bash
-# Fast heuristic mode
-python experiments/test_e2e_auditor.py --mode heuristic
-
-# Deep neural cross-encoder mode
-python experiments/test_e2e_auditor.py --mode neural
-```
+Configuration in `pytest.ini` adds both `src` and the repository root to `PYTHONPATH`.
 
 ---
 
-## Experimental Results & Benchmark Insights
-
-### Official 800-Example Test Split Benchmark
-
-The benchmark tests systems on held-out records (200 records per class) with 0% document overlap with training data.
-
-| System Architecture | Overall Accuracy | Macro-F1 | False-Support Rate (FSR $\downarrow$) | Outdated F1 | Current F1 | Contradicted F1 | Unsupported F1 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Existing Static Baselines (No Temporal Awareness)** | | | | | | | |
-| ✗ Static Heuristic Baseline | 68.12% | 0.596 | **92.50% (Severe Failure)** | 0.00% | 63.84% | 83.76% | 90.66% |
-| ✗ Static Neural (Zero-Shot Cross-Encoder) | 40.62% | 0.354 | **51.50% (Severe Failure)** | 0.00% | 48.57% | 56.82% | 36.30% |
-| ✗ Static Neural (Fine-Tuned Cross-Encoder) | 71.75% | 0.636 | **98.50% (The Static Paradox)** | 0.00% | 64.88% | 93.10% | 96.46% |
-| **Parallax (Our Temporal Verifier Architecture)** | | | | | | | |
-| ✓ Parallax Heuristic (Temporal) | 91.25% | 0.913 | **0.00% (Flawless)** | 95.85% | 95.01% | 83.76% | 90.66% |
-| ✓ Parallax Neural Verifier (Zero-Shot) | 53.50% | 0.564 | **0.00% (Flawless)** | 64.78% | 67.55% | 56.82% | 36.30% |
-| ✓ **Parallax Neural Verifier (Fine-Tuned, Ours)** | **96.38%** | **0.9639** | **0.00% (Flawless)** | **97.77%** | **98.23%** | **93.10%** | **96.46%** |
-
-> [!IMPORTANT]
-> **The Static Entailment Paradox**:
-> Notice that when the neural cross-encoder is fine-tuned to high linguistic accuracy, the **static baseline's False-Support Rate jumps from $51.50\% \rightarrow 98.50\%$**!
-> Why? Because an accurate NLI model correctly recognizes that obsolete context strictly entails the claim (197/200 recall). Without temporal arbitration, a static RAG verifier blindly accepts all 98.5% of these outdated claims as true.
-> **Parallax solves this paradox**: pairing the exact same fine-tuned cross-encoder with Stage 2 Temporal Arbitration slashes false support to **0.00%**, boosting overall accuracy to **96.38%** and Macro-F1 to **0.9639**.
-
----
-
-### Staleness Duration Sensitivity (Phase B)
-
-As retrieved evidence grows older, static baselines suffer even greater failure rates. In contrast, Parallax retains zero false support regardless of evidence age:
-
-| Staleness Duration | Number of Samples | Static Baseline FSR $\downarrow$ | Parallax FSR $\downarrow$ |
-| :--- | :---: | :---: | :---: |
-| 0 – 30 Days | 70 | 87.14% *(Severe)* | **0.00%** |
-| 31 – 60 Days | 38 | 94.74% *(Severe)* | **0.00%** |
-| 61 – 90 Days | 23 | 95.65% *(Severe)* | **0.00%** |
-| 91 – 120 Days | 6 | 100.00% *(Complete Failure)* | **0.00%** |
-| 121 – 153 Days | 63 | 98.41% *(Severe)* | **0.00%** |
-
----
-
-### Multi-Claim RAG Paragraph Auditing (Phase C, 100 Scenarios)
-
-When auditing full multi-claim RAG paragraphs (Pristine, Stale, Hallucinated, and Mixed archetypes):
-
-| RAG Auditor Configuration | Overall Paragraph Accuracy | False Trust Rate (FTR $\downarrow$) | Pristine Trust Score | Stale Trust Score | Mixed Trust Score |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Static Baseline RAG Auditor** | 38.00% | 16.00% *(Dangerous)* | 74.0% | **72.0%** *(Overconfident)* | **48.0%** *(Overconfident)* |
-| **Parallax Heuristic Auditor** | 64.00% | **2.67% (Safe)** | 74.0% | **40.0%** *(Penalized)* | **25.3%** *(Penalized)* |
-| **Parallax Neural Auditor (Fine-Tuned, Ours)** | **90.00%** | **4.00% (Safe)** | **96.0%** | **54.0%** *(Penalized)* | **34.6%** *(Penalized)* |
-
----
-
-## Core Pipeline Architecture
-
-Parallax implements a modular 6-stage pipeline:
-
-1. **`ClaimDecomposer`** (`src/pipeline/decomposer.py`):
-   Segments generated RAG answers into standalone atomic claims while stripping preamble boilerplate and preserving casing and capitalization. Also extracts temporal anchor cues (e.g., `"in 2021"`, `"currently"`, `"formerly"`).
-2. **`SentenceMatcher`** (`src/pipeline/matcher.py`):
-   Aligns each claim to candidate sentences in the retrieved context using lexical and salient entity overlap ranking.
-3. **`TemporalAnchorResolver`** (`src/pipeline/temporal_resolver.py`):
-   Disambiguates claim temporal phrasing. Claims explicitly framed as historical facts (e.g., *"X was the CEO in 2021"*) are anchored historically and protected from being falsely labeled as `OUTDATED`.
-4. **`SupersessionGraph`** (`src/pipeline/supersession_graph.py`):
-   Tracks entity-level fact revision lineages in a directed acyclic graph (DAG), tracking active successor facts when an earlier version is superseded.
-5. **`TemporalArbiter`** (`src/verifier/temporal_arbiter.py`):
-   Performs two-stage arbitration mapping NLI entailment states and temporal validity intervals (`valid_from`, `valid_to`, `superseded_by`) against reference time $t_{\text{ref}}$.
-6. **`ParallaxAuditor`** (`src/pipeline/auditor.py`):
-   Integrates all stages to generate paragraph-level trust scores, claim-by-claim diagnostic traces, structured JSON exports, and interactive HTML audit dashboards.
-
----
-
-## Python API Usage
-
-Audit multi-sentence RAG responses with temporal provenance in Python:
+## Python API
 
 ```python
 from pipeline.auditor import ParallaxAuditor
 
-# Initialize auditor (use_neural_nli=True for Cross-Encoder, False for fast heuristic)
-auditor = ParallaxAuditor(use_neural_nli=True, default_ref_time="2024-12-01")
+auditor = ParallaxAuditor(
+    use_neural_nli=False,
+    default_ref_time="2024-12-01",
+)
 
-query = "Who is the Master of the Horse?"
-answer = "Based on retrieved context, the Master of the Horse is Lord de Mauley."
+report = auditor.audit_response(
+    query="Who is the Master of the Horse?",
+    answer_text="The Master of the Horse is Lord de Mauley.",
+    retrieved_docs=[
+        {
+            "doc_id": "100025",
+            "doc_title": "Master of the Horse",
+            "text": "The current Master of the Horse is Lord de Mauley.",
+            "valid_from": "2024-06-01",
+            "valid_to": "2024-07-01",
+            "superseded_by": "2024-07-01",
+        }
+    ],
+)
 
-retrieved_docs = [
-    {
-        "doc_id": "100025",
-        "doc_title": "Master of the Horse",
-        "text": "The Master of the Horse is an office in the Royal Household. The current Master of the Horse is Lord de Mauley.",
-        "valid_from": "2024-06-01",
-        "valid_to": "2024-07-01",        # Superseded before reference time!
-        "superseded_by": "2024-07-01",
-    }
-]
-
-# Run audit
-audit_report = auditor.audit_response(query, answer, retrieved_docs)
-print(auditor.format_report(audit_report))
-
-# Generate interactive HTML report
-auditor.format_html_report(audit_report, output_path="audit_report.html")
+print(auditor.format_report(report))
+auditor.export_json(report, "audit_report.json")
 ```
 
-### Sample Audit Output:
+Use `use_neural_nli=True` to initialize the cross-encoder implementation. Neural inference may require the model checkpoint to be downloaded or the local fine-tuned model to be present.
+
+---
+
+## Interactive Playground
+
+The FastAPI playground compares conventional static verification with Parallax dynamic verification and includes heuristic and optional neural modes.
+
+```bash
+uvicorn src.playground.app:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Open:
+
 ```text
-============================================================
-PARALLAX END-TO-END RAG AUDIT REPORT
-============================================================
-Query:          Who is the Master of the Horse?
-Reference Time: 2024-12-01
-Overall Status: DEGRADED_BY_STALE_EVIDENCE
-Trust Score:    0.0% (0/1 claims verified current)
-------------------------------------------------------------
-[Claim 1] [OUTDATED]
-  Claim:       "The Master of the Horse is Lord de Mauley."
-  Evidence:    "The current Master of the Horse is Lord de Mauley."
-  Source:      Master of the Horse (id: 100025)
-  Alignment:   Match Score = 1.000 | SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01)
-  Diagnosis:   Evidence strictly entails claim, but that evidence was superseded and is obsolete.
-============================================================
+http://127.0.0.1:8000
+```
+
+A direct Python entry point is also available:
+
+```bash
+python -m src.playground.app
+```
+
+The UI supports preloaded outdated, current, contradicted, unsupported, and missing-revision cases. It also exposes the API at `POST /api/verify` and `GET /api/examples`.
+
+---
+
+## Benchmark
+
+The benchmark files are stored in `data/benchmark/` in both CSV and Parquet formats:
+
+| Split | Purpose |
+|---|---|
+| `train` | Model training / development |
+| `dev` | Validation |
+| `test` | Held-out benchmark evaluation |
+| `full_benchmark` | Complete combined dataset |
+
+Each example belongs to one of:
+
+- `SUPPORTED_CURRENT`
+- `OUTDATED`
+- `CONTRADICTED`
+- `UNSUPPORTED`
+
+The evaluation module reports:
+
+- overall accuracy;
+- macro-F1;
+- per-class precision, recall, F1, and support;
+- a confusion matrix; and
+- **False-Support Rate for OUTDATED claims** (`FSR_OUTD`).
+
+```python
+from evaluation.metrics import compute_parallax_metrics
+
+metrics = compute_parallax_metrics(y_true, y_pred)
+print(metrics["accuracy"])
+print(metrics["macro_f1"])
+print(metrics["fsr_outdated"])
 ```
 
 ---
 
-## Citation & Contact
+## Reproducing Experiments
 
-If you use Parallax in your research, please cite:
+Fine-tune the cross-encoder:
+
+```bash
+python src/verifier/train_cross_encoder.py --epochs 3 --batch_size 16 --lr 2e-5
+```
+
+Run the primary benchmark evaluation:
+
+```bash
+python experiments/evaluate_full_benchmark.py --batch_size 32
+```
+
+Analyze temporal sensitivity:
+
+```bash
+python experiments/analyze_temporal_sensitivity.py
+```
+
+Benchmark multi-claim RAG auditing:
+
+```bash
+python experiments/benchmark_rag_auditor.py --n_per_archetype 25
+```
+
+Run an end-to-end diagnostic:
+
+```bash
+python experiments/test_e2e_auditor.py --mode heuristic
+python experiments/test_e2e_auditor.py --mode neural
+```
+
+Generated and stored experiment outputs are available under `experiments/`. The publication draft and tables are under `paper/`.
+
+---
+
+## Core Pipeline
+
+```mermaid
+flowchart LR
+    A[RAG Answer] --> B[Claim Decomposer]
+    B --> C[Evidence Matcher]
+    C --> D[Linguistic NLI]
+    D --> E[Temporal Resolver]
+    E --> F[Current / Outdated / Contradicted / Unsupported]
+    F --> G[Text, JSON, or HTML Report]
+```
+
+1. **ClaimDecomposer** removes conversational boilerplate and splits the answer into atomic claims.
+2. **EvidenceMatcher** selects relevant retrieved sentences using lexical and entity overlap signals.
+3. **HeuristicNLI** or **NeuralCrossEncoderNLI** determines entailment, contradiction, or neutrality.
+4. **TemporalAnchorResolver** compares claim anchors and evidence validity intervals to the reference time.
+5. **ParallaxAuditor** synthesizes the claim-level verdicts and overall trust status.
+
+---
+
+## Example Verdict
+
+```text
+[Claim 1] [OUTDATED]
+Claim:       "The Master of the Horse is Lord de Mauley."
+Evidence:    "The current Master of the Horse is Lord de Mauley."
+Source:      Master of the Horse (id: 100025)
+Diagnosis:   Evidence entails the claim, but that evidence was superseded before the reference time.
+```
+
+The auditor does not infer that a fact is out of date merely from wording: it needs valid-from/valid-to or supersession metadata on the retrieved evidence.
+
+---
+
+## Citation
 
 ```bibtex
 @article{parallax2026,
@@ -316,3 +363,7 @@ If you use Parallax in your research, please cite:
   year={2026}
 }
 ```
+
+## License
+
+No repository license file is currently present. The README badge is not a substitute for a license grant; project distribution or reuse should be clarified before applying one of the existing SPDX-style labels or adding a `LICENSE` file.
