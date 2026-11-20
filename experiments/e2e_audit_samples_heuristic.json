@@ -20,7 +20,8 @@
         "evidence_matched": "The current Master of the Horse is Lord de Mauley.",
         "evidence_source": "Master of the Horse (id: 100025)",
         "match_score": 1.0,
-        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01)",
+        "temporal_anchor": "PRESENT",
+        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
         "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
       },
       {
@@ -30,6 +31,7 @@
         "evidence_matched": "\u00c0lex Carbonell Vall\u00e9s (born 15 September 1997) is a Spanish footballer who plays as a central midfielder for Dutch club Almere City.",
         "evidence_source": "\u00c1lex Carbonell (id: 52437830)",
         "match_score": 0.8533,
+        "temporal_anchor": "IMPLICIT_PRESENT",
         "temporal_status": "ACTIVE / VALID",
         "explanation": "Evidence entails claim and is valid at evaluation reference time."
       }
@@ -56,6 +58,7 @@
         "evidence_matched": "Jerrick Harding (born April 13, 1998) is an American professional basketball player for MoraBanc Andorra of the Liga ACB.",
         "evidence_source": "Jerrick Harding (id: 581293)",
         "match_score": 0.7533,
+        "temporal_anchor": "IMPLICIT_PRESENT",
         "temporal_status": "ACTIVE / VALID",
         "explanation": "Evidence entails claim and is valid at evaluation reference time."
       },
@@ -66,7 +69,8 @@
         "evidence_matched": "The total number of chapters is 112.",
         "evidence_source": "List of Astro Boy chapters (id: 89211)",
         "match_score": 0.86,
-        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01)",
+        "temporal_anchor": "IMPLICIT_PRESENT",
+        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
         "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
       },
       {
@@ -76,6 +80,7 @@
         "evidence_matched": "Jerrick Harding (born April 13, 1998) is an American professional basketball player for MoraBanc Andorra of the Liga ACB.",
         "evidence_source": "Jerrick Harding (id: 581293)",
         "match_score": 0.2889,
+        "temporal_anchor": "HISTORICAL",
         "temporal_status": "CONFLICTING (evidence valid 2024-07-01 to present)",
         "explanation": "Evidence directly refutes or contradicts the claim."
       }
@@ -102,6 +107,7 @@
         "evidence_matched": "The current chief is Jon Radus.",
         "evidence_source": "Fullerton Police Department (id: 9921)",
         "match_score": 0.2873,
+        "temporal_anchor": "PRESENT",
         "temporal_status": "CONFLICTING (evidence valid 2024-08-01 to present)",
         "explanation": "Evidence directly refutes or contradicts the claim."
       }
@@ -128,6 +134,7 @@
         "evidence_matched": "The category of the Karunagappalli railway station is NSG 4.",
         "evidence_source": "Karunagappalli railway station (id: 41120)",
         "match_score": 1.0,
+        "temporal_anchor": "IMPLICIT_PRESENT",
         "temporal_status": "ACTIVE / VALID",
         "explanation": "Evidence entails claim and is valid at evaluation reference time."
       },
@@ -138,6 +145,7 @@
         "evidence_matched": "According to the recent demographic survey, the median age in Warsaw, Illinois is 45.4 years.",
         "evidence_source": "Warsaw, Illinois (id: 18821)",
         "match_score": 0.92,
+        "temporal_anchor": "IMPLICIT_PRESENT",
         "temporal_status": "ACTIVE / VALID",
         "explanation": "Evidence entails claim and is valid at evaluation reference time."
       }

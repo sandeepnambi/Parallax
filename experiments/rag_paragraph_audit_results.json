@@ -1,38 +1,38 @@
 {
   "Static Baseline RAG Auditor": {
-    "paragraph_accuracy": 0.4,
-    "false_trust_rate": 0.1733,
-    "false_trust_count": 13,
+    "paragraph_accuracy": 0.38,
+    "false_trust_rate": 0.16,
+    "false_trust_count": 12,
     "non_pristine_total": 75,
     "avg_trust_score_by_archetype": {
-      "PRISTINE_CURRENT": 0.8,
+      "PRISTINE_CURRENT": 0.74,
       "DEGRADED_STALE": 0.72,
-      "HALLUCINATED": 0.44,
-      "MIXED_STALE_HALLUCINATED": 0.493
+      "HALLUCINATED": 0.38,
+      "MIXED_STALE_HALLUCINATED": 0.48
     }
   },
   "Parallax Heuristic Auditor": {
-    "paragraph_accuracy": 0.7,
-    "false_trust_rate": 0.0,
-    "false_trust_count": 0,
+    "paragraph_accuracy": 0.64,
+    "false_trust_rate": 0.0267,
+    "false_trust_count": 2,
     "non_pristine_total": 75,
     "avg_trust_score_by_archetype": {
-      "PRISTINE_CURRENT": 0.8,
-      "DEGRADED_STALE": 0.36,
-      "HALLUCINATED": 0.38,
-      "MIXED_STALE_HALLUCINATED": 0.226
+      "PRISTINE_CURRENT": 0.74,
+      "DEGRADED_STALE": 0.4,
+      "HALLUCINATED": 0.36,
+      "MIXED_STALE_HALLUCINATED": 0.253
     }
   },
   "Parallax Neural Auditor (Ours)": {
-    "paragraph_accuracy": 0.65,
-    "false_trust_rate": 0.0,
-    "false_trust_count": 0,
+    "paragraph_accuracy": 0.61,
+    "false_trust_rate": 0.0133,
+    "false_trust_count": 1,
     "non_pristine_total": 75,
     "avg_trust_score_by_archetype": {
       "PRISTINE_CURRENT": 0.8,
-      "DEGRADED_STALE": 0.38,
+      "DEGRADED_STALE": 0.4,
       "HALLUCINATED": 0.5,
-      "MIXED_STALE_HALLUCINATED": 0.253
+      "MIXED_STALE_HALLUCINATED": 0.293
     }
   },
   "sample_audit_traces": [
@@ -51,6 +51,7 @@
           "evidence_matched": "Context regarding query: The series has over 900,000 copies in circulation.",
           "evidence_source": "Class de 2-ban Me ni Kawaii Onna no Ko to Tomodachi ni Natta (id: 74897662) (id: doc_pristine_0_1)",
           "match_score": 0.7486,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -61,6 +62,7 @@
           "evidence_matched": "Additional context: Holland averaged 18.5 points, 6.7 rebounds, 2.8 assists, and 2.1 steals per game in 29 games played.",
           "evidence_source": "Ron Holland (basketball) (id: 73048713) (id: doc_pristine_0_2)",
           "match_score": 0.4801,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "INSUFFICIENT",
           "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
         }
@@ -81,6 +83,7 @@
           "evidence_matched": "Context regarding query: Other languages spoken at home included Mandarin (16.9%), Cantonese (13.9%), Arabic (6.0%), Greek (5.2%) and Macedonian (2.3%).",
           "evidence_source": "South Hurstville (id: 2579786) (id: doc_pristine_1_1)",
           "match_score": 0.4386,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -91,6 +94,7 @@
           "evidence_matched": "Additional context: Cuba didn't compete in the Summer Olympics again until 1935, which was again held in Paris, France.",
           "evidence_source": "Ram\u00f3n Fonst (id: 7133469) (id: doc_pristine_1_2)",
           "match_score": 0.6333,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -111,6 +115,7 @@
           "evidence_matched": "Context regarding query: It covers an area of 2,961.13 km2 and had a population of 191,422 at the 2010 Census and 228,591 at the 2020 Census; the official estimate as at mid 2023 was 239,918 - comprising 121,700 males and 118,220 females.",
           "evidence_source": "Dharmasraya Regency (id: 6575754) (id: doc_pristine_2_1)",
           "match_score": 0.4694,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -121,6 +126,7 @@
           "evidence_matched": "Additional context: The most common responses for religion in North Narrabeen were No Religion 45.8%, Catholic 21.4% and Anglican 15.1%.",
           "evidence_source": "North Narrabeen, New South Wales (id: 2581172) (id: doc_pristine_2_2)",
           "match_score": 0.5426,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -141,6 +147,7 @@
           "evidence_matched": "Context regarding query: Shri shahnawaz alam, Rjd is the MP elected in the 2024 Indian general election.",
           "evidence_source": "Araria (id: 1702687) (id: doc_pristine_3_1)",
           "match_score": 0.5706,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "INSUFFICIENT",
           "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
         },
@@ -151,6 +158,7 @@
           "evidence_matched": "Additional context: The average household size was 3.31 and the average family size was 2.75.",
           "evidence_source": "Donovan, Illinois (id: 111302) (id: doc_pristine_3_2)",
           "match_score": 0.5111,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -171,6 +179,7 @@
           "evidence_matched": "Context regarding query: The director of communications to the prime minister of the United Kingdom is Matthew Doyle.",
           "evidence_source": "Director of communications (id: 2469264) (id: doc_pristine_4_1)",
           "match_score": 0.7029,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "INSUFFICIENT",
           "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
         },
@@ -181,6 +190,7 @@
           "evidence_matched": "Additional context: Boarding the rapid transit system or a train costs R$ 5.00.",
           "evidence_source": "Bilhete \u00danico (id: 9558964) (id: doc_pristine_4_2)",
           "match_score": 0.7841,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -201,6 +211,7 @@
           "evidence_matched": "Context regarding query: Muhammad-Ali Abdur-Rahkman (born September 1, 1994) is an American professional basketball player for Bilbao of the Spanish Liga ACB.",
           "evidence_source": "Muhammad-Ali Abdur-Rahkman (id: 45489848) (id: doc_pristine_5_1)",
           "match_score": 0.7103,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -211,6 +222,7 @@
           "evidence_matched": "Additional context: The employment status of those at least 15 was that 63 (29.6%) people were employed full-time, 36 (16.9%) were part-time, and 6 (2.8%) were unemployed.",
           "evidence_source": "Opononi (id: 6677624) (id: doc_pristine_5_2)",
           "match_score": 0.5821,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -231,6 +243,7 @@
           "evidence_matched": "Context regarding query: Aleksandar Dimitri\u0107 (; born 29 February 1996) is a Serbian football forward who plays for Hajduk 1912.",
           "evidence_source": "Aleksandar Dimitri\u0107 (id: 49762893) (id: doc_pristine_6_1)",
           "match_score": 0.8533,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -241,6 +254,7 @@
           "evidence_matched": "Additional context: Salem Al-Najdi (; born 27 January 2003) is a Saudi professional footballer who currently plays as a left-back or a left winger for Al-Nassr.",
           "evidence_source": "Salem Al-Najdi (id: 72535764) (id: doc_pristine_6_2)",
           "match_score": 0.8556,
+          "temporal_anchor": "PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -261,6 +275,7 @@
           "evidence_matched": "Context regarding query: The population was 1,768 at the 2020 census.",
           "evidence_source": "Mazomanie, Wisconsin (id: 260374) (id: doc_pristine_7_1)",
           "match_score": 0.5833,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -271,6 +286,7 @@
           "evidence_matched": "Additional context: Each of its five \"centuriae\" was a double centuria of 200 men (rather than 100).",
           "evidence_source": "Centuria (id: 1880720) (id: doc_pristine_7_2)",
           "match_score": 0.4403,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "INSUFFICIENT",
           "explanation": "Retrieved passage does not contain sufficient facts to establish claim."
         }
@@ -291,6 +307,7 @@
           "evidence_matched": "Context regarding query: The most recent champions are the Barrie Baycats who defeated the Guelph Royals 4-0 in the 2024 Dominico Cup Final.",
           "evidence_source": "Intercounty Baseball League (id: 1725632) (id: doc_pristine_8_1)",
           "match_score": 0.8941,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -301,6 +318,7 @@
           "evidence_matched": "Additional context: Kent's park system includes 55 parks, miniparks, playfields, skateparks, greenbelts, and other related facilities.",
           "evidence_source": "Kent, Washington (id: 138005) (id: doc_pristine_8_2)",
           "match_score": 0.7197,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }
@@ -321,6 +339,7 @@
           "evidence_matched": "Context regarding query: In April 2008, dance act Signature used \"Nachna Onda Nei\" on \"Britain's Got Talent\" in their audition and again in their final performance.",
           "evidence_source": "Billie Jean (id: 298538) (id: doc_pristine_9_1)",
           "match_score": 0.7606,
+          "temporal_anchor": "HISTORICAL",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         },
@@ -331,6 +350,7 @@
           "evidence_matched": "Additional context: The village has a population (2023) of 2,536 and a population density of .",
           "evidence_source": "Bj\u00f8rnevatn (id: 4204049) (id: doc_pristine_9_2)",
           "match_score": 0.65,
+          "temporal_anchor": "IMPLICIT_PRESENT",
           "temporal_status": "ACTIVE / VALID",
           "explanation": "Evidence entails claim and is valid at evaluation reference time."
         }

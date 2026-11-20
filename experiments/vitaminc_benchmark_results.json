@@ -2,47 +2,47 @@
   {
     "model_name": "Heuristic NLI Baseline (Lexical)",
     "total_samples": 1996,
-    "instance_accuracy": 0.3938,
-    "macro_f1": 0.3082,
+    "instance_accuracy": 0.4755,
+    "macro_f1": 0.3231,
     "per_class": {
       "SUPPORTS": {
-        "precision": 0.6518,
-        "recall": 0.3525,
-        "f1": 0.4575,
+        "precision": 0.7021,
+        "recall": 0.2326,
+        "f1": 0.3495,
         "support": 993
       },
       "REFUTES": {
-        "precision": 0.4983,
-        "recall": 0.4395,
-        "f1": 0.4671,
+        "precision": 0.5238,
+        "recall": 0.7218,
+        "f1": 0.607,
         "support": 992
       },
       "NOT ENOUGH INFO": {
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
+        "precision": 0.0067,
+        "recall": 0.1818,
+        "f1": 0.0129,
         "support": 11
       }
     },
     "total_contrastive_cases": 500,
-    "all_instances_case_accuracy": 0.052,
+    "all_instances_case_accuracy": 0.098,
     "total_contrastive_pairs": 1976,
-    "contrastive_pair_accuracy": 0.0633,
+    "contrastive_pair_accuracy": 0.1169,
     "confusion_matrix": {
       "SUPPORTS": {
-        "SUPPORTS": 350,
-        "REFUTES": 430,
-        "NOT ENOUGH INFO": 213
+        "SUPPORTS": 231,
+        "REFUTES": 642,
+        "NOT ENOUGH INFO": 120
       },
       "REFUTES": {
-        "SUPPORTS": 185,
-        "REFUTES": 436,
-        "NOT ENOUGH INFO": 371
+        "SUPPORTS": 98,
+        "REFUTES": 716,
+        "NOT ENOUGH INFO": 178
       },
       "NOT ENOUGH INFO": {
-        "SUPPORTS": 2,
+        "SUPPORTS": 0,
         "REFUTES": 9,
-        "NOT ENOUGH INFO": 0
+        "NOT ENOUGH INFO": 2
       }
     }
   },

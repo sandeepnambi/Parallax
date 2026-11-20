@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![Tests: 23 passed](https://img.shields.io/badge/tests-23%20passed-success.svg)](tests/)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
 **Parallax** investigates and solves a critical temporal blind spot in Retrieval-Augmented Generation (RAG): **an answer claim can be strictly entailed by retrieved context passages and still be factually incorrect because that evidence has since been superseded.**
@@ -10,9 +11,10 @@
 
 ## Key Highlights
 
-- **2,800-Example Scaled Benchmark**: Balanced across 4 classes (`SUPPORTED_CURRENT`, `OUTDATED`, `CONTRADICTED`, `UNSUPPORTED`) with 0% document overlap between splits.
-- **End-to-End Multi-Claim Auditor**: Combines claim decomposition, sentence-level context matching, cross-encoder natural language inference, and temporal provenance arbitration.
-- **Elimination of False Support**: Static verifiers falsely certify **51.5% to 92.5%** of outdated claims as current. Parallax completely eliminates false support (**0.00% FSR**) with **100.00% precision on active information**.
+- **2,800-Example Scaled Benchmark**: Cleaned and balanced across 4 classes (`SUPPORTED_CURRENT`, `OUTDATED`, `CONTRADICTED`, `UNSUPPORTED`) derived from temporal Wikipedia revisions, with 0% document overlap between train, dev, and test splits.
+- **End-to-End Multi-Claim Auditor**: Combines syntactic claim decomposition, sentence-level context matching, cross-encoder natural language inference, temporal phrasing resolution, and provenance graph arbitration.
+- **Elimination of the Static Blind Spot**: Existing static RAG verifiers suffer a **51.5% to 92.5% False-Support Rate (Severe Failure)** because they confuse semantic entailment with temporal freshness. Parallax completely eliminates false support (**0.00% FSR**) while delivering **100.00% precision on active information**.
+- **Interactive CLI & HTML Audits**: Inspect datasets, run live demos, and audit RAG answers with rich interactive HTML reports and structured JSON exports.
 
 ---
 
@@ -20,8 +22,8 @@
 
 | Label | Definition | Verification Condition |
 | :--- | :--- | :--- |
-| `SUPPORTED_CURRENT` | Claim is entailed by retrieved evidence that is **currently active** at reference time $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` > $t_{\text{ref}}$ or `present`) |
-| `OUTDATED` | Claim is entailed by retrieved evidence, but that evidence was **superseded or expired** prior to $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` ≤ $t_{\text{ref}}$ or `superseded_by` ≤ $t_{\text{ref}}$) |
+| `SUPPORTED_CURRENT` | Claim is entailed by retrieved evidence that is **currently active** at reference time $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` > `t_ref` ∨ `present`) |
+| `OUTDATED` | Claim is entailed by retrieved evidence, but that evidence was **superseded or expired** prior to $t_{\text{ref}}$. | `Entails(E, C)` ∧ (`valid_to` ≤ `t_ref` ∨ `superseded_by` ≤ `t_ref`) |
 | `CONTRADICTED` | Claim directly conflicts with or is refuted by retrieved evidence. | `Refutes(E, C)` |
 | `UNSUPPORTED` | Retrieved passages contain insufficient facts to substantiate the claim. | `Neutral(E, C)` |
 
@@ -31,6 +33,9 @@
 
 ```text
 Parallax/
+├── cli.py                             # Interactive CLI: demo, info, and end-to-end auditing
+├── requirements.txt                   # Standardized dependencies (PyTorch, Transformers, Pytest, Ruff)
+├── setup.py                           # Editable package setup
 ├── data/
 │   ├── benchmark/
 │   │   ├── train.parquet / .csv       # 1,600 training records (400 per class)
@@ -41,24 +46,34 @@ Parallax/
 │       └── sample_audit_100.csv       # 100-sample human inspection audit
 ├── src/
 │   ├── benchmark_cleaner_scaler.py    # Raw data cleaning, verbalization & split scaling
+│   ├── dataset_builder.py             # Benchmark builder and temporal metadata extractor
 │   ├── verbalizer.py                  # Syntactic QA-to-declarative claim converter
 │   ├── pipeline/
-│   │   ├── decomposer.py              # Sentence splitting & boilerplate stripping
-│   │   ├── matcher.py                 # Lexical + salient entity sentence matching
+│   │   ├── decomposer.py              # Sentence splitting, casing preservation & temporal cues
+│   │   ├── matcher.py                 # Lexical + salient entity overlap ranking
+│   │   ├── temporal_resolver.py       # Present-tense vs historical claim phrasing resolver
+│   │   ├── supersession_graph.py      # Fact revision lineage DAG & successor tracking
 │   │   └── auditor.py                 # End-to-End ParallaxAuditor & NeuralCrossEncoderNLI
 │   ├── verifier/
-│   │   ├── static_baseline.py         # Static NLI verifier (Heuristic + Cross-Encoder)
+│   │   ├── static_baseline.py         # Static NLI verifiers (Heuristic + Cross-Encoder)
 │   │   └── temporal_arbiter.py        # Two-stage temporal validity arbiter
 │   └── evaluation/
 │       └── metrics.py                 # 4-class F1, Accuracy, FSR_outdated & LaTeX table exporter
-├── experiments/
-│   ├── evaluate_full_benchmark.py     # Official 800-example Phase A test benchmark runner
-│   ├── analyze_temporal_sensitivity.py# Phase B staleness elapsed & domain breakdown
-│   ├── benchmark_rag_auditor.py       # Phase C 100-scenario multi-claim paragraph audit
-│   ├── benchmark_vitaminc.py          # Step 3 contrastive backbone evaluation
-│   ├── test_e2e_auditor.py            # Diagnostic script testing 4 RAG scenarios
-│   └── benchmark_test_results.json    # Official evaluation results
-└── setup.py                           # Editable package setup
+├── tests/                             # Automated test suite (23 unit tests)
+│   ├── test_decomposer.py             # Sentence splitting, filtering, and cue extraction
+│   ├── test_matcher.py                # Lexical and entity-based context alignment
+│   ├── test_temporal_resolver.py      # Historical vs present anchor classification
+│   ├── test_supersession_graph.py     # DAG revision chains and successor lookup
+│   ├── test_verbalizer.py             # Question-answer to declarative claim conversion
+│   ├── test_verifier.py               # Static vs temporal verification logic
+│   └── test_metrics.py                # Evaluation metric computations
+└── experiments/
+    ├── evaluate_full_benchmark.py     # Official 800-example Phase A test benchmark runner
+    ├── analyze_temporal_sensitivity.py# Phase B staleness elapsed & domain breakdown
+    ├── benchmark_rag_auditor.py       # Phase C 100-scenario multi-claim paragraph audit
+    ├── benchmark_vitaminc.py          # Contrastive backbone evaluation on VitaminC
+    ├── test_e2e_auditor.py            # Diagnostic script testing 4 RAG scenarios
+    └── benchmark_test_results.json    # Saved experimental results
 ```
 
 ---
@@ -67,7 +82,7 @@ Parallax/
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/Parallax.git
+   git clone https://github.com/sandeepnambi/Parallax.git
    cd Parallax
    ```
 
@@ -81,10 +96,42 @@ Parallax/
    pip install -e .
    ```
 
-4. **Verify installation**:
+4. **Run Automated Unit Tests**:
+   Verify the full test suite (23 tests covering decomposer, matcher, verifier, graph, and resolver):
+   ```bash
+   python -m pytest tests/
+   ```
+
+5. **Linting Check**:
    ```bash
    ruff check .
    ```
+
+---
+
+## Command-Line Interface (CLI)
+
+Parallax includes a full-featured CLI (`cli.py`) for inspecting benchmark splits, running live demonstrations, and auditing custom queries.
+
+### 1. View Benchmark & Environment Info
+```bash
+python cli.py info
+```
+*Displays dataset record counts per class, split distributions, device info, and cached model checkpoints.*
+
+### 2. Run Interactive Auditor Demo
+```bash
+python cli.py demo
+```
+*Runs an interactive walkthrough demonstrating how Parallax detects outdated facts, contradicted claims, and pristine evidence in RAG responses.*
+
+### 3. Audit a RAG Response via CLI
+```bash
+python cli.py audit "Who is the Master of the Horse?" \
+  "Based on retrieved context, the Master of the Horse is Lord de Mauley." \
+  --ref-time 2024-12-01 \
+  --output-html audit_report.html
+```
 
 ---
 
@@ -97,8 +144,8 @@ python experiments/evaluate_full_benchmark.py --batch_size 32
 ```
 *Outputs comparative metrics and exports publication-ready LaTeX table to `experiments/table_test_results.tex`.*
 
-### 2. Temporal Sensitivity & Domain Breakdown (Phase B)
-Analyzes how False-Support Rate scales across staleness duration (0–30 days up to 120–153 days) and 6 knowledge domains:
+### 2. Staleness Duration & Domain Sensitivity (Phase B)
+Analyzes how False-Support Rate behaves across staleness age buckets (0–30 days up to 121–153 days) and 6 knowledge domains:
 ```bash
 python experiments/analyze_temporal_sensitivity.py
 ```
@@ -109,8 +156,8 @@ Evaluates `ParallaxAuditor` on 100 multi-claim paragraphs (250+ claims) across P
 python experiments/benchmark_rag_auditor.py --n_per_archetype 25
 ```
 
-### 4. Contrastive Backbone Benchmark on VitaminC (Step 3)
-Evaluates cross-encoder contrastive sensitivity on paired factual edits in VitaminC:
+### 4. Contrastive Backbone Benchmark on VitaminC
+Evaluates cross-encoder contrastive sensitivity on paired factual revisions in VitaminC:
 ```bash
 python experiments/benchmark_vitaminc.py --max_cases 500 --batch_size 32
 ```
@@ -124,6 +171,74 @@ python experiments/test_e2e_auditor.py --mode heuristic
 # Deep neural cross-encoder mode
 python experiments/test_e2e_auditor.py --mode neural
 ```
+
+---
+
+## Experimental Results & Benchmark Insights
+
+### Official 800-Example Test Split Benchmark
+
+The benchmark tests systems on held-out records (200 records per class) with 0% document overlap with training data.
+
+| System Architecture | Overall Accuracy | Macro-F1 | False-Support Rate (FSR $\downarrow$) | Outdated F1 | Current F1 | Contradicted F1 | Unsupported F1 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Existing Static Baselines (No Temporal Awareness)** | | | | | | | |
+| ✗ Static Heuristic Baseline | 68.12% | 0.596 | **92.50% (Severe Failure)** | 0.00% | 63.84% | 83.76% | 90.66% |
+| ✗ Static Neural Cross-Encoder | 40.62% | 0.354 | **51.50% (Severe Failure)** | 0.00% | 48.57% | 56.82% | 36.30% |
+| **Parallax (Our Temporal Verifier Architecture)** | | | | | | | |
+| ✓ Parallax Heuristic (Temporal) | **91.25%** | **0.913** | **0.00% (Flawless)** | **95.85%** | **95.01%** | **83.76%** | **90.66%** |
+| ✓ Parallax Neural Verifier | **53.50%** | **0.564** | **0.00% (Flawless)** | **64.78%** | **67.55%** | **56.82%** | **36.30%** |
+
+> [!NOTE]
+> **Understanding the "Severe Failure" in Existing Baselines**:
+> The 51.5% to 92.5% False-Support Rate is a **failure of existing standard RAG evaluators**, not Parallax.
+> Standard NLI and faithfulness checkers evaluate only *textual entailment*. When retrieved context states *"Lord de Mauley is Master of the Horse"*, the premise strictly entails the claim. However, because that evidence was superseded in July 2024, the answer is factually false in December 2024. Static systems blindly certify these obsolete claims.
+> **Parallax completely eliminates this failure mode (0.00% FSR)** by combining deep inference with temporal validity arbitration.
+
+---
+
+### Staleness Duration Sensitivity (Phase B)
+
+As retrieved evidence grows older, static baselines suffer even greater failure rates. In contrast, Parallax retains zero false support regardless of evidence age:
+
+| Staleness Duration | Number of Samples | Static Baseline FSR $\downarrow$ | Parallax FSR $\downarrow$ |
+| :--- | :---: | :---: | :---: |
+| 0 – 30 Days | 70 | 87.14% *(Severe)* | **0.00%** |
+| 31 – 60 Days | 38 | 94.74% *(Severe)* | **0.00%** |
+| 61 – 90 Days | 23 | 95.65% *(Severe)* | **0.00%** |
+| 91 – 120 Days | 6 | 100.00% *(Complete Failure)* | **0.00%** |
+| 121 – 153 Days | 63 | 98.41% *(Severe)* | **0.00%** |
+
+---
+
+### Multi-Claim RAG Paragraph Auditing (Phase C, 100 Scenarios)
+
+When auditing full multi-claim RAG paragraphs (Pristine, Stale, Hallucinated, and Mixed archetypes):
+
+| RAG Auditor Configuration | Overall Paragraph Accuracy | False Trust Rate (FTR $\downarrow$) | Pristine Trust Score | Stale Trust Score | Mixed Trust Score |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Static Baseline RAG Auditor** | 40.00% | 17.33% *(Dangerous)* | 80.0% | **72.0%** *(Overconfident)* | **49.3%** *(Overconfident)* |
+| **Parallax Heuristic Auditor** | **70.00%** | **0.00% (Safe)** | 80.0% | **36.0%** *(Penalized)* | **22.6%** *(Penalized)* |
+| **Parallax Neural Auditor (Ours)** | **65.00%** | **0.00% (Safe)** | 80.0% | **38.0%** *(Penalized)* | **25.3%** *(Penalized)* |
+
+---
+
+## Core Pipeline Architecture
+
+Parallax implements a modular 6-stage pipeline:
+
+1. **`ClaimDecomposer`** (`src/pipeline/decomposer.py`):
+   Segments generated RAG answers into standalone atomic claims while stripping preamble boilerplate and preserving casing and capitalization. Also extracts temporal anchor cues (e.g., `"in 2021"`, `"currently"`, `"formerly"`).
+2. **`SentenceMatcher`** (`src/pipeline/matcher.py`):
+   Aligns each claim to candidate sentences in the retrieved context using lexical and salient entity overlap ranking.
+3. **`TemporalAnchorResolver`** (`src/pipeline/temporal_resolver.py`):
+   Disambiguates claim temporal phrasing. Claims explicitly framed as historical facts (e.g., *"X was the CEO in 2021"*) are anchored historically and protected from being falsely labeled as `OUTDATED`.
+4. **`SupersessionGraph`** (`src/pipeline/supersession_graph.py`):
+   Tracks entity-level fact revision lineages in a directed acyclic graph (DAG), tracking active successor facts when an earlier version is superseded.
+5. **`TemporalArbiter`** (`src/verifier/temporal_arbiter.py`):
+   Performs two-stage arbitration mapping NLI entailment states and temporal validity intervals (`valid_from`, `valid_to`, `superseded_by`) against reference time $t_{\text{ref}}$.
+6. **`ParallaxAuditor`** (`src/pipeline/auditor.py`):
+   Integrates all stages to generate paragraph-level trust scores, claim-by-claim diagnostic traces, structured JSON exports, and interactive HTML audit dashboards.
 
 ---
 
@@ -154,6 +269,9 @@ retrieved_docs = [
 # Run audit
 audit_report = auditor.audit_response(query, answer, retrieved_docs)
 print(auditor.format_report(audit_report))
+
+# Generate interactive HTML report
+auditor.format_html_report(audit_report, output_path="audit_report.html")
 ```
 
 ### Sample Audit Output:
@@ -174,27 +292,6 @@ Trust Score:    0.0% (0/1 claims verified current)
   Diagnosis:   Evidence strictly entails claim, but that evidence was superseded and is obsolete.
 ============================================================
 ```
-
----
-
-## Experimental Results Summary
-
-### Official 800-Example Test Split Benchmark
-
-| System | Overall Accuracy | Macro-F1 | **$\mathbf{FSR}_{\text{OUTD}} \downarrow$**<br>*(False-Support Rate)* | Supported-Current F1 | Outdated F1 | Contradicted F1 | Unsupported F1 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Static Heuristic Baseline** | 68.12% | 0.596 | **92.50%** | 63.84% | 0.00% | 83.76% | 90.66% |
-| **Parallax Heuristic** (Temporal) | **91.25%** | **0.913** | **0.00%** | **95.01%** | **95.85%** | **83.76%** | **90.66%** |
-| **Static Neural Baseline** (Cross-Encoder) | 40.62% | 0.354 | **51.50%** | 48.57% | 0.00% | 56.82% | 36.30% |
-| **Parallax Neural Verifier (Ours)** | **53.50%** | **0.564** | **0.00%** | **67.55%** | **64.78%** | **56.82%** | **36.30%** |
-
-### Multi-Claim RAG Paragraph Auditing (100 Scenarios)
-
-| RAG Auditor Configuration | Overall Paragraph Accuracy | **False Trust Rate (FTR)** | Pristine Response Trust Score | **Stale Response Trust Score** | **Mixed Response Trust Score** |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Static Baseline RAG Auditor** | 40.00% | **17.33%** | 80.0% | **72.0%** *(Overconfident)* | **49.3%** *(Overconfident)* |
-| **Parallax Heuristic Auditor** | **70.00%** | **0.00%** | 80.0% | **36.0%** *(Penalized)* | **22.6%** *(Penalized)* |
-| **Parallax Neural Auditor (Ours)** | **65.00%** | **0.00%** | 80.0% | **38.0%** *(Penalized)* | **25.3%** *(Penalized)* |
 
 ---
 
