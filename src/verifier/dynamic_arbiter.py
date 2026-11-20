@@ -50,6 +50,7 @@ class DynamicContextVerifier:
         claim: str,
         retrieved_passages: List[Dict[str, Any]],
         target_doc_id: Optional[str] = None,
+        stage_a_rels: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Audits a single claim against retrieved passages.
@@ -59,6 +60,7 @@ class DynamicContextVerifier:
             retrieved_passages: List of passage dicts:
                 [{'passage_id': ..., 'doc_id': ..., 'snapshot_date': 'YYYY-MM-DD', 'text': ...}]
             target_doc_id: Optional target doc ID for logging.
+            stage_a_rels: Optional precomputed list of Stage A relations.
 
         Returns:
             Dict containing:
@@ -82,16 +84,19 @@ class DynamicContextVerifier:
         supporting_passages = []
         contradicting_passages = []
 
-        # Batch-predict Stage A if model supports predict_batch
-        if hasattr(self.nli, "predict_batch"):
+        if stage_a_rels is not None and len(stage_a_rels) == len(retrieved_passages):
+            rels = stage_a_rels
+        elif hasattr(self.nli, "predict_batch"):
             premises = [p.get("text", "") for p in retrieved_passages]
             hypotheses = [claim] * len(retrieved_passages)
             rels = self.nli.predict_batch(premises, hypotheses)
         else:
             rels = [self._nli_predict(premise=p.get("text", ""), hypothesis=claim) for p in retrieved_passages]
 
+        passage_id_to_rel = {}
         for p, rel in zip(retrieved_passages, rels):
             p_id = p.get("passage_id", "p_?")
+            passage_id_to_rel[p_id] = rel
             stage_a_results.append({
                 "passage_id": p_id,
                 "doc_id": p.get("doc_id"),
@@ -152,7 +157,10 @@ class DynamicContextVerifier:
                 latest_rev = max(newer_revisions, key=lambda x: str(x.get("snapshot_date", "")))
                 
                 # Check if latest revision still entails the claim
-                latest_rel = self._nli_predict(premise=latest_rev.get("text", ""), hypothesis=claim)
+                latest_p_id = latest_rev.get("passage_id", "p_?")
+                latest_rel = passage_id_to_rel.get(latest_p_id)
+                if latest_rel is None:
+                    latest_rel = self._nli_predict(premise=latest_rev.get("text", ""), hypothesis=claim)
                 
                 # If newer revision does NOT entail the claim (is CONTRADICTION or NEUTRAL),
                 # or if it contradicts the supporting passage text:
@@ -190,7 +198,7 @@ class DynamicContextVerifier:
             "stage_a_results": stage_a_results,
         }
 
-    def evaluate_dataset(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def evaluate_dataset(self, records: List[Dict[str, Any]], batch_size: int = 32) -> Dict[str, Any]:
         """
         Runs dynamic auditing over a list of Benchmark v2 records.
         """
@@ -200,12 +208,39 @@ class DynamicContextVerifier:
         y_pred = []
         detailed_results = []
 
-        for r in records:
+        # If model supports batching, precompute Stage A across all passage-claim pairs
+        precomputed_stage_a: Optional[List[List[str]]] = None
+        if hasattr(self.nli, "predict_batch"):
+            all_premises = []
+            all_hypotheses = []
+            index_map = []  # (example_idx, passage_idx)
+
+            for i, r in enumerate(records):
+                c = r["claim"]
+                passages = r.get("retrieved_passages", [])
+                for j, p in enumerate(passages):
+                    all_premises.append(p.get("text", ""))
+                    all_hypotheses.append(c)
+                    index_map.append((i, j))
+
+            if all_premises:
+                all_rels = self.nli.predict_batch(all_premises, all_hypotheses, batch_size=batch_size)
+                precomputed_stage_a = [[] for _ in range(len(records))]
+                for (i, _), rel in zip(index_map, all_rels):
+                    precomputed_stage_a[i].append(rel)
+
+        for i, r in enumerate(records):
             claim = r["claim"]
             passages = r["retrieved_passages"]
             gold = r["gold_label"]
+            stage_a_rels = precomputed_stage_a[i] if precomputed_stage_a is not None else None
 
-            audit_res = self.verify(claim, passages, target_doc_id=r.get("target_doc_id"))
+            audit_res = self.verify(
+                claim,
+                passages,
+                target_doc_id=r.get("target_doc_id"),
+                stage_a_rels=stage_a_rels,
+            )
             pred = audit_res["verdict"]
 
             y_true.append(gold)
@@ -235,4 +270,6 @@ class DynamicContextVerifier:
             "total_samples": len(y_true),
             "classification_report": report,
             "detailed_results": detailed_results,
+            "y_true": y_true,
+            "y_pred": y_pred,
         }
