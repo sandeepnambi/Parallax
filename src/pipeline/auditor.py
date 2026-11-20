@@ -6,11 +6,9 @@ Decomposition -> Evidence Sentence Matching -> Neural/Heuristic NLI -> Temporal 
 
 import os
 import json
+import html
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Union
-
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 try:
     from pipeline.decomposer import ClaimDecomposer
@@ -34,6 +32,15 @@ class NeuralCrossEncoderNLI:
     device: str
 
     def __init__(self, model_name: Optional[str] = None):
+        try:
+            import torch
+            from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        except ImportError as exc:
+            raise ImportError(
+                "NeuralCrossEncoderNLI requires 'torch' and 'transformers'. "
+                "Install them with `pip install .[neural]`"
+            ) from exc
+        self.torch = torch
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         if model_name is None:
             finetuned_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "parallax_nli_finetuned"))
@@ -67,7 +74,7 @@ class NeuralCrossEncoderNLI:
             padding=True, truncation=True, max_length=256,
             return_tensors="pt"
         ).to(self.device)
-        with torch.no_grad():
+        with self.torch.no_grad():
             logits = self.model(**inputs).logits
             pred_id = int(logits.argmax(dim=-1).item())
         label = str(self.id2label.get(pred_id, pred_id)).upper() # ENTAILMENT, CONTRADICTION, NEUTRAL
@@ -92,7 +99,7 @@ class NeuralCrossEncoderNLI:
                 padding=True, truncation=True, max_length=256,
                 return_tensors="pt"
             ).to(self.device)
-            with torch.no_grad():
+            with self.torch.no_grad():
                 logits = self.model(**inputs).logits
                 pred_ids = logits.argmax(dim=-1).cpu().tolist()
             for pid in pred_ids:
@@ -210,6 +217,7 @@ class ParallaxAuditor:
                     anchor_info=anchor_info,
                     valid_from=valid_from,
                     valid_to=valid_to,
+                    superseded_by=superseded_by,
                     reference_time=ref_time
                 )
                 
@@ -223,11 +231,18 @@ class ParallaxAuditor:
                     except Exception:
                         pass
                     stale_str = f" ({staleness_days} days stale)" if staleness_days is not None else ""
-                    temp_status = f"SUPERSEDED on {valid_to} (expired before ref_time {ref_time}){stale_str}"
+                    if superseded_by:
+                        temp_status = f"SUPERSEDED by {superseded_by} (expired before ref_time {ref_time}){stale_str}"
+                    else:
+                        temp_status = f"SUPERSEDED on {valid_to} (expired before ref_time {ref_time}){stale_str}"
                     expl = "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
                 elif temp_eval["verdict_modifier"] == "HISTORICALLY_VALID":
                     verdict = "SUPPORTED_CURRENT"
                     temp_status = "HISTORICALLY VALID (consistent with claim anchor)"
+                    expl = temp_eval["reason"]
+                elif temp_eval["verdict_modifier"] == "TEMPORALLY_INCOMPATIBLE":
+                    verdict = "UNSUPPORTED"
+                    temp_status = "TEMPORALLY INCOMPATIBLE (evidence does not cover claim period)"
                     expl = temp_eval["reason"]
                 else:
                     verdict = "SUPPORTED_CURRENT"
@@ -312,7 +327,7 @@ class ParallaxAuditor:
         return "\n".join(lines)
 
     def format_html_report(self, audit: Dict[str, Any]) -> str:
-        """Generates a standalone, beautifully styled HTML audit report."""
+        """Generates a standalone, beautifully styled HTML audit report with dynamic content escaped."""
         badge_colors = {
             "SUPPORTED_CURRENT": "#28a745",
             "OUTDATED": "#fd7e14",
@@ -321,28 +336,44 @@ class ParallaxAuditor:
         }
         claims_html = []
         for c in audit["claim_audits"]:
-            color = badge_colors.get(c["verdict"], "#333")
+            color = badge_colors.get(c.get("verdict"), "#333")
+            claim_idx = html.escape(str(c.get("claim_index", "")))
+            verdict_esc = html.escape(str(c.get("verdict", "")))
+            claim_text_esc = html.escape(str(c.get("claim_text", "")))
+            expl_esc = html.escape(str(c.get("explanation", "")))
+
             ev_html = ""
             if c.get("evidence_matched"):
+                ev_matched_esc = html.escape(str(c.get("evidence_matched", "")))
+                ev_source_esc = html.escape(str(c.get("evidence_source", "")))
+                temp_status_esc = html.escape(str(c.get("temporal_status", "")))
                 ev_html = f"""
                 <div style="margin-top: 6px; padding: 8px; background: #f8f9fa; border-left: 3px solid {color}; border-radius: 4px;">
-                    <div><strong>Evidence:</strong> "{c['evidence_matched']}"</div>
-                    <div style="font-size: 0.85em; color: #555; margin-top: 4px;"><strong>Source:</strong> {c['evidence_source']} | <strong>Status:</strong> {c['temporal_status']}</div>
+                    <div><strong>Evidence:</strong> "{ev_matched_esc}"</div>
+                    <div style="font-size: 0.85em; color: #555; margin-top: 4px;"><strong>Source:</strong> {ev_source_esc} | <strong>Status:</strong> {temp_status_esc}</div>
                 </div>
                 """
             claims_html.append(f"""
             <div style="margin-bottom: 14px; padding: 12px; border: 1px solid #e9ecef; border-radius: 6px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: bold;">Claim {c['claim_index']}</span>
-                    <span style="background-color: {color}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">{c['verdict']}</span>
+                    <span style="font-weight: bold;">Claim {claim_idx}</span>
+                    <span style="background-color: {color}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">{verdict_esc}</span>
                 </div>
-                <div style="margin: 8px 0; font-size: 1.05em;">"{c['claim_text']}"</div>
+                <div style="margin: 8px 0; font-size: 1.05em;">"{claim_text_esc}"</div>
                 {ev_html}
-                <div style="margin-top: 6px; font-size: 0.85em; color: #444;"><em>Diagnosis:</em> {c['explanation']}</div>
+                <div style="margin-top: 6px; font-size: 0.85em; color: #444;"><em>Diagnosis:</em> {expl_esc}</div>
             </div>
             """)
 
-        html = f"""<!DOCTYPE html>
+        query_esc = html.escape(str(audit.get("query", "")))
+        ref_time_esc = html.escape(str(audit.get("reference_time", "")))
+        overall_status_esc = html.escape(str(audit.get("overall_status", "")))
+        ans_text_esc = html.escape(str(audit.get("answer_text", "")))
+        truth_score = audit.get("truthfulness_score", 0.0) * 100.0
+        sc_count = audit.get("claim_breakdown", {}).get("SUPPORTED_CURRENT", 0)
+        tot_claims = audit.get("total_claims", 0)
+
+        html_out = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -359,33 +390,33 @@ class ParallaxAuditor:
 <body>
     <div class="header">
         <h2 style="margin: 0 0 10px 0;">Parallax End-to-End RAG Audit Report</h2>
-        <div><strong>Query:</strong> {audit['query']}</div>
-        <div style="font-size: 0.9em; opacity: 0.85;">Anchor Reference Time: {audit['reference_time']}</div>
+        <div><strong>Query:</strong> {query_esc}</div>
+        <div style="font-size: 0.9em; opacity: 0.85;">Anchor Reference Time: {ref_time_esc}</div>
         <div class="status-box">
             <div class="metric-card">
                 <div style="font-size: 0.8em; text-transform: uppercase;">Overall Status</div>
-                <div style="font-size: 1.2em; font-weight: bold;">{audit['overall_status']}</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{overall_status_esc}</div>
             </div>
             <div class="metric-card">
                 <div style="font-size: 0.8em; text-transform: uppercase;">Trust Score</div>
-                <div style="font-size: 1.2em; font-weight: bold;">{audit['truthfulness_score'] * 100:.1f}%</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{truth_score:.1f}%</div>
             </div>
             <div class="metric-card">
                 <div style="font-size: 0.8em; text-transform: uppercase;">Claims Current</div>
-                <div style="font-size: 1.2em; font-weight: bold;">{audit['claim_breakdown']['SUPPORTED_CURRENT']} / {audit['total_claims']}</div>
+                <div style="font-size: 1.2em; font-weight: bold;">{sc_count} / {tot_claims}</div>
             </div>
         </div>
     </div>
 
     <div class="section-title">Audited Answer Paragraph</div>
-    <div class="answer-box">"{audit['answer_text']}"</div>
+    <div class="answer-box">"{ans_text_esc}"</div>
 
     <div class="section-title">Claim-by-Claim Breakdown</div>
     {''.join(claims_html)}
 </body>
 </html>
 """
-        return html
+        return html_out
 
     def export_json(self, audit: Dict[str, Any], filepath: str):
         """Exports the audit report to a structured JSON file."""

@@ -21,7 +21,7 @@
         "evidence_source": "Master of the Horse (id: 100025)",
         "match_score": 1.0,
         "temporal_anchor": "PRESENT",
-        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
+        "temporal_status": "SUPERSEDED by 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
         "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
       },
       {
@@ -70,7 +70,7 @@
         "evidence_source": "List of Astro Boy chapters (id: 89211)",
         "match_score": 0.86,
         "temporal_anchor": "IMPLICIT_PRESENT",
-        "temporal_status": "SUPERSEDED on 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
+        "temporal_status": "SUPERSEDED by 2024-07-01 (expired before ref_time 2024-12-01) (153 days stale)",
         "explanation": "Evidence strictly entails claim, but that evidence was superseded and is obsolete."
       },
       {
