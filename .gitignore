@@ -73,6 +73,7 @@ models/**/*.safetensors
 models/**/*.bin
 models/**/*.pt
 
-# Temporary and local logs
+# Temporary and local logs & generated reports
 *.log
+*.html
 scratch/
